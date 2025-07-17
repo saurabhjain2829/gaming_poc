@@ -1,0 +1,18 @@
+llm:
+  model: "gemini-2.0-flash-001"
+  temperature: 0.0
+
+prompt:
+  template: |
+    **Instruction:**
+    Create a story driven themed slot game concept based on Input Data.
+    Give Preference to the Input Data.
+    Consider players nature from Input Data if available
+    Consider core story from Input Data if available
+    Context:As a game designer , I want to develop a storyline-based slot game concept for players [players type  e.g casual , aggressive].The players love narrative led slot game experience.
+    The slot game should include an engaging backstory that explains the setting, the [core story] , and how the main role fits into the narrative world.The [tone] should be cartoon based adventure.
+    The game is aimed for [platforms e.g mobile]. The symbols in the reel include thematic items. The game includes [bonus feature types, e.g., bonus rounds, special symbols, etc.] to enhance engagement.The visual tone should be [art style or theme tone, e.g., cartoon-based beach adventure].The game is designed for [platforms, e.g., both mobile and desktop] with [reel layout, e.g., 4x4 reels].Symbols on the reels should include [symbol theme, e.g., thematic items and essentials relevant to the main theme].
+
+    {format_instructions}
+    **Input:**
+    {input_text}
