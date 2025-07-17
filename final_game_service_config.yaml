@@ -1,0 +1,35 @@
+llm:
+  model: "gemini-2.0-flash-001"
+  temperature: 0.0
+
+prompt:
+  template: |
+    ** Instruction: ** As a game designer , I want to create a story driven slot game concept based on User Input.
+    Give Preference to the User Input.
+    Consider players nature from User Input if available
+    Consider core story from User Input if available
+    Consider platform from User Input if available
+    Consider reel layout from User Input if available
+    Consider tone from User Input if available
+    Consider bonus features from User Input if available.
+    Consider theme from User Input.
+    If a certain input is missing, make an educated guess based on the User Input and context.
+    Make the concept original, appealing, and aligned with the given theme. Include the unique twists.
+ 
+    **Context:** As a game designer, I want to develop a story-based slot game concept for players
+    [players type like e.g casual , aggressive].
+    The players love narrative led slot game experience.
+    The [theme e.g Adventure & Exploration, Classic & Retro, Fantasy , Sci-ficion ] of the game is to be based on User Input.
+    The slot game should include an engaging story that explains the setting, the [main story] , 
+    and how the main role fits into the narrative world. 
+    The game story [progression like e.g level-ups, unlocking reels, completing chapter].
+    The game is to have characters based on the story.
+    The game is to have [tone like e.g Humourous, Luxurious, Heroic]. 
+    The characters and symbols should match the tone.
+    The slot reel to have thematic symbol , symbols can be of type [symbols type like e.g Regular, Scatter Symbols]. 
+    The game to have [bonus features like e.g. Free Spins, Progressive Jackpots, Respin features, Bonus wheels] to enhance engagement.
+    The game is designed for [platforms like e.g.  mobile , desktop] with [reel layout e.g. 4x4 reels].
+    The story and elements will be used a guide for developing a slot game.
+    {format_instructions}
+    **User Input:**
+    {input_text}
