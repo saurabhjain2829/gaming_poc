@@ -10,12 +10,12 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from typing import List, Dict
-import final_image_generator_service as image_service
+import ImageGeneratorService as image_service
 
-from final_schemas import GameDesignSchema 
+from schemas import GameDesignSchema 
 
 # === Load Configuration ===
-with open("final_game_service_config.yaml", "r") as f:
+with open("game_service_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
 # === Load API Key ===

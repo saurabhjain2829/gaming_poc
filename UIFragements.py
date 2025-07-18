@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import os
 from PageHelper import initialize_session_state
-from final_schemas import GameDesignSchema 
+from schemas import GameDesignSchema 
 from pathlib import Path
 import time
 from PIL import Image

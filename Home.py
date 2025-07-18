@@ -4,8 +4,8 @@ from pathlib import Path
 import time
 from PageHelper import process_data_prompt, initialize_session_state
 from UIFragements import show_output
-from final_schemas import GameDesignSchema 
-import final_game_service as final_game_service
+from schemas import GameDesignSchema 
+import GameService as GameService
 
 st.set_page_config(
     page_title="Game Story Generator App" ,
@@ -94,7 +94,7 @@ with col1:
             with st.spinner("Preparing game story. Please wait.", show_time=True):
                 
                 
-                result = final_game_service.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
+                result = GameService.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
                 st.session_state.show_story = True
                 break
         

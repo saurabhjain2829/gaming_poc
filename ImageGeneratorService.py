@@ -4,15 +4,14 @@ import asyncio
 from huggingface_hub import InferenceClient
 from PIL import Image
 from typing import List, Dict
-
+from dotenv import load_dotenv
 
 # Load config from YAML
-with open("final_image_config.yaml", "r") as file:
+with open("image_config.yaml", "r") as file:
     config = yaml.safe_load(file)
 
 # Extract config values
 provider = config["huggingface"]["provider"]
-api_key = os.environ[config["huggingface"]["api_key_env"]]
 model = config["huggingface"]["model"]
 
 width = config["image"]["width"]
@@ -27,7 +26,7 @@ style_prompt_template = config["image"]["style_prompt"]
 
 
 # Set up the client
-client = InferenceClient(provider=provider, api_key=api_key)
+client = InferenceClient(provider=provider)
 
 # Async function to generate one image
 async def generate_sketch(image_input: Dict[str, str], art_style: str):
