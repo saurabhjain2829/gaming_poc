@@ -45,10 +45,11 @@ def generate_game_details(user_input,exclude_sections):
         prompt=game_prompt,
         output_parser=parser,
         verbose=True
-        
+ 
 
         
     )
+    
 
     exclude_sections_text=[]
     for section in exclude_sections:
@@ -56,7 +57,8 @@ def generate_game_details(user_input,exclude_sections):
  
     result=chain.run({"input_text": user_input, "exclude_sections": "\n".join(exclude_sections_text)})
  
-    run_image_generator(extract_symbols(result),result.visualStyle.artStyle)
+    run_image_generator(extract_symbols(result),extract_visual_style)
+    run_image_generator(extract_characters(result),extract_visual_style)
     print(result)
     return result
 
@@ -85,4 +87,18 @@ def extract_symbols(schema: GameDesignSchema) -> List[Dict[str, str]]:
 
     return all_symbols
 
+def extract_characters(schema: GameDesignSchema) -> List[Dict[str, str]]:
+    if not schema.characters:
+        return []
 
+    all_characters = []
+    for characters in (schema.characters or []):
+        all_characters.append({"name": characters.name, "description": characters.description})
+
+   
+    return all_characters
+
+def extract_visual_style(schema: GameDesignSchema) -> str:
+    if not schema.visualStyle:
+        return ""
+    return schema.visualStyle.artStyle

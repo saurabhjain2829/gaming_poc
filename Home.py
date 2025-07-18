@@ -40,7 +40,20 @@ def get_new_images():
             new_images.append(img)
             st.session_state.shown_images.add(img.name)
     return new_images
-
+def extract_exclude_options():
+    story_options = {
+           'bonusfeaturesoption': st.session_state["bonusfeaturesoption"], 
+           'charactersoption': st.session_state["charactersoption"],
+           'storiesoption': st.session_state["storiesoption"],
+           'symbolsoption': st.session_state["symbolsoption"],
+           'visualstyleoption': st.session_state["visualstyleoption"]}
+    mapping_dict ={'visualstyleoption': 'visualstyle', 'charactersoption': 'characters',
+               'storiesoption': 'story', 'symbolsoption':'symbols', 'bonusfeaturesoption':'bonusfeatures'}
+    exclude_sections=[]
+    for key, value  in story_options.items():
+        if value is False:
+            exclude_sections.append(mapping_dict[key])
+    return exclude_sections 
 # Main loop to check for new images
 def display_images(image_count):
     index = 0
@@ -79,7 +92,9 @@ with col1:
     if create:
         while True: 
             with st.spinner("Preparing game story. Please wait.", show_time=True):
-                result = final_game_service.generate_game_details( st.session_state["gamedescription"],"")
+                
+                
+                result = final_game_service.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
                 st.session_state.show_story = True
                 break
         

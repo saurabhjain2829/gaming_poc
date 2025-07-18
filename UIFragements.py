@@ -168,9 +168,10 @@ def show_output(prompt):
                                 img = Image.open(img_path)
                                 st.write(characterPathDescDict.get(img_path.name))
                                 index = index + 1
-                                break
+                                #break
                         time.sleep(1) 
-                        break
+                        #break
+                    st.session_state.shown_images = set()
                     
                     #for i in range(len(prompt.characters)):
                         #imagepath = "images/" + prompt.characters[i].name + ".png"
@@ -206,6 +207,7 @@ def show_output(prompt):
                                     #break
                             time.sleep(1) 
                             #break
+                        st.session_state.shown_images = set()
 
                 with st.expander(":atom_symbol: **SpecialSymbols**", expanded=False):
                     with st.spinner("Loading SpecialSymbols. Please wait.", show_time=True):
@@ -229,4 +231,5 @@ def show_output(prompt):
                                     index = index + 1
                                    # break
                             time.sleep(1)
-                            #break 
+                            #break
+                        st.session_state.shown_images = set()

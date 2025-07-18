@@ -30,12 +30,21 @@ style_prompt_template = config["image"]["style_prompt"]
 client = InferenceClient(provider=provider, api_key=api_key)
 
 # Async function to generate one image
-async def generate_sketch(image_input: Dict[str, str],art_style:str):
+async def generate_sketch(image_input: Dict[str, str], art_style: str):
     print(image_input)
-    image_name=image_input["name"]
-    image_description=image_input["description"]
-    prompt = style_prompt_template.format(name=image_name,description=image_description,art_style=art_style)
+    image_name = image_input["name"]
+    image_description = image_input["description"]
+    filename = f"{image_name.replace(' ', '_')}{extension}"
+    filepath = os.path.join(folder_name, filename)
+
+    # Check if image already exists
+    if os.path.exists(filepath):
+        print(f"Already exists: {filepath}")
+        return f"Skipped (already exists): {filepath}"
+
+    prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
     print(prompt)
+
     def sync_generate():
         image = client.text_to_image(
             prompt=prompt,
@@ -43,14 +52,13 @@ async def generate_sketch(image_input: Dict[str, str],art_style:str):
             height=height,
             width=width,
         )
-        filename = f"{image_name.replace(' ', '_')}{extension}"
-        filepath = os.path.join(folder_name, filename)
         if resize_enabled:
             image = image.resize((resize_width, resize_height), Image.LANCZOS)
         image.save(filepath)
         return f"Saved: {filepath}"
 
     return await asyncio.to_thread(sync_generate)
+
 
 async def generate_all(symbols: List[Dict[str, str]], art_style:str):
     tasks = [
@@ -60,6 +68,7 @@ async def generate_all(symbols: List[Dict[str, str]], art_style:str):
     results = await asyncio.gather(*tasks)
     for result in results:
         print(result)
+    print("All images generated successfully")
 
 # Run the script
 # asyncio.run(generate_all([
