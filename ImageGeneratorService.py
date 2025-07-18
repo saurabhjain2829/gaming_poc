@@ -26,7 +26,7 @@ style_prompt_template = config["image"]["style_prompt"]
 
 
 # Set up the client
-client = InferenceClient(provider=provider)
+client = InferenceClient(provider=provider) # HUGGINGFACE_HUB_TOKEN should be in enviornments
 
 # Async function to generate one image
 async def generate_sketch(image_input: Dict[str, str], art_style: str):

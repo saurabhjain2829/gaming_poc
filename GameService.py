@@ -24,7 +24,8 @@ load_dotenv()
 # === Output Parser ===
 parser = PydanticOutputParser(pydantic_object=GameDesignSchema)
 
-# === LLM Model ===
+# GOOGLE_API_KEY should be in enviornments
+# === LLM Model === 
 llm_model = ChatGoogleGenerativeAI(
     model=config["llm"]["model"],
     temperature=config["llm"]["temperature"]
