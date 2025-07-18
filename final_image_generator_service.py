@@ -3,6 +3,8 @@ import yaml
 import asyncio
 from huggingface_hub import InferenceClient
 from PIL import Image
+from typing import List, Dict
+
 
 # Load config from YAML
 with open("final_image_config.yaml", "r") as file:
@@ -19,17 +21,21 @@ extension = config["image"]["extension"]
 resize_enabled = config["image"].get("resize", False)
 resize_width = config["image"].get("resize_width", width)
 resize_height = config["image"].get("resize_height", height)
+folder_name=  config["image"]["directory_name"]
 
 style_prompt_template = config["image"]["style_prompt"]
-inputs = config["inputs"]
+
 
 # Set up the client
 client = InferenceClient(provider=provider, api_key=api_key)
 
 # Async function to generate one image
-async def generate_sketch(input_text: str):
-    prompt = style_prompt_template.format(input_text=input_text)
-
+async def generate_sketch(image_input: Dict[str, str],art_style:str):
+    print(image_input)
+    image_name=image_input["name"]
+    image_description=image_input["description"]
+    prompt = style_prompt_template.format(name=image_name,description=image_description,art_style=art_style)
+    print(prompt)
     def sync_generate():
         image = client.text_to_image(
             prompt=prompt,
@@ -37,20 +43,26 @@ async def generate_sketch(input_text: str):
             height=height,
             width=width,
         )
-        filename = f"{input_text.replace(' ', '_')}_{width}x{height}{extension}"
+        filename = f"{image_name.replace(' ', '_')}{extension}"
+        filepath = os.path.join(folder_name, filename)
         if resize_enabled:
             image = image.resize((resize_width, resize_height), Image.LANCZOS)
-        image.save(filename)
-        return f"Saved: {filename}"
+        image.save(filepath)
+        return f"Saved: {filepath}"
 
     return await asyncio.to_thread(sync_generate)
 
-# Main async runner
-async def generate_all(inputs):
-    tasks = [generate_sketch(text) for text in inputs]
+async def generate_all(symbols: List[Dict[str, str]], art_style:str):
+    tasks = [
+        generate_sketch(symbol,art_style)
+        for symbol in symbols
+    ]
     results = await asyncio.gather(*tasks)
     for result in results:
         print(result)
 
 # Run the script
-asyncio.run(generate_all(["skeleton","seashell"]))
+# asyncio.run(generate_all([
+#     {"name": "skeleton", "description": "A spooky skeleton in a dark forest"},
+#     {"name": "seashell", "description": "A shiny seashell on a beach"}
+# ]))

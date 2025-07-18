@@ -10,11 +10,9 @@ image:
   extension: .png
   resize_width: 128
   resize_height: 128
+  directory_name: images
   style_prompt: |
-    A clean, minimalist pencil sketch of {input_text} designed as a slot
-    machine reel symbol. Sharp black outlines, no shading, 
-    transparent background, simple line art style, optimized 
-    for 128x128 resolution icon, clear and easily recognizable.
-
-inputs:
-  - skeleton
+    Minimalist pencil sketch of {name}, featuring {description}, 
+    drawn in {art_style}. Styled as a slot machine reel symbol,
+    using clean black outlines, no shading, and a transparent background. 
+    Designed in a simple line art style, optimized for 128x128 icon resolution—clear, distinct, and easily recognizable

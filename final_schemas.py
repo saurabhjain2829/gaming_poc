@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 from pydantic import BaseModel
  
 class Setting(BaseModel):
@@ -33,8 +33,8 @@ class VisualStyle(BaseModel):
  
 class GameDesignSchema(BaseModel):
     gameTitle: str
-    story: Story
-    characters: List[Character]
-    symbols: Symbols
-    bonusFeatures: List[BonusFeature]
-    visualStyle: VisualStyle
+    story: Optional[Story] = None
+    characters: Optional[List[Character]] = None
+    symbols: Optional[Symbols] = None
+    bonusFeatures: Optional[List[BonusFeature]] = None
+    visualStyle: Optional[VisualStyle] = None
