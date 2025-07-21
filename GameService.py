@@ -10,7 +10,7 @@ from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from typing import List, Dict
-import ImageGeneratorService as image_service
+import ImageGeneratorService_nebius as image_service
 
 from schemas import GameDesignSchema 
 
@@ -58,16 +58,16 @@ def generate_game_details(user_input,exclude_sections):
  
     result=chain.run({"input_text": user_input, "exclude_sections": "\n".join(exclude_sections_text)})
  
-    run_image_generator(extract_symbols(result),extract_visual_style)
-    run_image_generator(extract_characters(result),extract_visual_style)
+    run_image_generator(extract_symbols(result),extract_visual_style(result),extract_game_title(result))
+    run_image_generator(extract_characters(result),extract_visual_style(result),extract_game_title(result))
     print(result)
     return result
 
-def run_image_generator(symbols,art_style):
+def run_image_generator(symbols: List[Dict[str, str]],art_style: str,gameTitle: str):
      if symbols:
         def async_task():
             try:
-                asyncio.run(image_service.generate_all(symbols,art_style))
+                asyncio.run(image_service.generate_all(symbols,art_style,gameTitle))
             except Exception as e:
                 print(f"[Image Generation Error] {e}")
 
@@ -103,3 +103,8 @@ def extract_visual_style(schema: GameDesignSchema) -> str:
     if not schema.visualStyle:
         return ""
     return schema.visualStyle.artStyle
+
+def extract_game_title(schema: GameDesignSchema) -> str:
+    if not schema.gameTitle:
+        return ""
+    return schema.gameTitle
