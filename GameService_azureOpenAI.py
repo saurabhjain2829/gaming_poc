@@ -1,33 +1,42 @@
-# main.py
 import yaml
-from dotenv import load_dotenv
-import os
+from pydantic.v1 import BaseSettings, Field
 import threading
 import asyncio
 
-from langchain_google_genai.chat_models import ChatGoogleGenerativeAI
+from langchain_openai import AzureChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from typing import List, Dict
-import ImageGeneratorService_nebius as image_service
 
-from schemas import GameDesignSchema 
+import ImageGeneratorService_nebius as image_service
+from schemas import GameDesignSchema
+
+# === Environment Settings ===
+class EnvironmentSettings(BaseSettings):
+    AZURE_OPENAI_API_KEY: str = Field(..., description="Azure OpenAI key")
+    AZURE_OPENAI_ENDPOINT: str = Field(..., description="Azure OpenAI endpoint")
+    AZURE_OPENAI_API_VERSION: str = Field(..., description="Azure OpenAI API version")
+    AZURE_OPENAI_DEPLOYMENT_NAME: str = Field(..., description="Azure OpenAI model name")
+
+    class Config:
+        env_file = ".env"
+
+environment_settings = EnvironmentSettings()
 
 # === Load Configuration ===
 with open("game_service_config.yaml", "r") as f:
     config = yaml.safe_load(f)
 
-# === Load API Key ===
-load_dotenv()
-
 # === Output Parser ===
 parser = PydanticOutputParser(pydantic_object=GameDesignSchema)
 
-# GOOGLE_API_KEY should be in enviornments
-# === LLM Model === 
-llm_model = ChatGoogleGenerativeAI(
-    model=config["llm"]["model"],
+# === Azure LLM Model === 
+llm_model = AzureChatOpenAI(
+    azure_endpoint=environment_settings.AZURE_OPENAI_ENDPOINT,
+    azure_deployment=environment_settings.AZURE_OPENAI_DEPLOYMENT_NAME,
+    api_version=environment_settings.AZURE_OPENAI_API_VERSION,
+    api_key=environment_settings.AZURE_OPENAI_API_KEY,
     temperature=config["llm"]["temperature"]
 )
 
@@ -38,40 +47,41 @@ game_prompt = PromptTemplate(
     template=config["prompt"]["template"]
 )
 
-
-def generate_game_details(user_input,exclude_sections):
+def generate_game_details(user_input, exclude_sections):
     print(exclude_sections)
     chain = LLMChain(
         llm=llm_model,
         prompt=game_prompt,
         output_parser=parser,
         verbose=True
-        
     )
-    
 
-    exclude_sections_text=[]
-    for section in exclude_sections:
-     exclude_sections_text.append(f'User does not want {section} in the output.')
- 
-    result=chain.run({"input_text": user_input, "exclude_sections": "\n".join(exclude_sections_text)})
- 
-    run_image_generator(extract_symbols(result),extract_visual_style(result),extract_game_title(result))
-    run_image_generator(extract_characters(result),extract_visual_style(result),extract_game_title(result))
+    exclude_sections_text = [
+        f'User does not want {section} in the output.'
+        for section in exclude_sections
+    ]
+
+    result = chain.run({
+        "input_text": user_input,
+        "exclude_sections": "\n".join(exclude_sections_text)
+    })
+
+    run_image_generator(extract_symbols(result), extract_visual_style(result), extract_game_title(result))
+    run_image_generator(extract_characters(result), extract_visual_style(result), extract_game_title(result))
+
     print(result)
     return result
 
-def run_image_generator(symbols: List[Dict[str, str]],art_style: str,gameTitle: str):
-     if symbols:
+def run_image_generator(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
+    if symbols:
         def async_task():
             try:
-                asyncio.run(image_service.generate_all(symbols,art_style,gameTitle))
+                asyncio.run(image_service.generate_all(symbols, art_style, gameTitle))
             except Exception as e:
                 print(f"[Image Generation Error] {e}")
 
         thread = threading.Thread(target=async_task)
-        thread.start()  
-
+        thread.start()
 
 def extract_symbols(schema: GameDesignSchema) -> List[Dict[str, str]]:
     if not schema.symbols:
@@ -80,7 +90,6 @@ def extract_symbols(schema: GameDesignSchema) -> List[Dict[str, str]]:
     all_symbols = []
     for symbol in (schema.symbols.regularSymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
-
     for symbol in (schema.symbols.specialSymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
 
@@ -90,12 +99,7 @@ def extract_characters(schema: GameDesignSchema) -> List[Dict[str, str]]:
     if not schema.characters:
         return []
 
-    all_characters = []
-    for characters in (schema.characters or []):
-        all_characters.append({"name": characters.name, "description": characters.description})
-
-   
-    return all_characters
+    return [{"name": char.name, "description": char.description} for char in schema.characters]
 
 def extract_visual_style(schema: GameDesignSchema) -> str:
     return schema.visualStyle.artStyle if schema.visualStyle else ""

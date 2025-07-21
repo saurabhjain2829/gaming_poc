@@ -13,7 +13,7 @@ with open("image_config.yaml", "r") as file:
     config = yaml.safe_load(file)
 
 # Extract config values
-
+folder_name=  config["image"]["directory_name"]
 model = config["nebius"]["model"]
 base_url = config["nebius"]["base_url"]
 response_extension= config["nebius"]["response_extension"]
@@ -40,8 +40,9 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
     image_name = image_input["name"]
     image_description = image_input["description"]
     filename = f"{image_name.replace(' ', '_')}{extension}"
-    directory_name= gameUtils.create_directory_name(gameTitle)
+    directory_name= gameUtils.create_directory_name(gameTitle,folder_name)
     os.makedirs(directory_name, exist_ok=True)
+    
     filepath = os.path.join(directory_name, filename)
 
     # Check if image already exists

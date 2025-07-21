@@ -5,7 +5,7 @@ import time
 from PageHelper import process_data_prompt, initialize_session_state
 from UIFragements import show_output
 from schemas import GameDesignSchema 
-import GameService as GameService
+import GameService_azureOpenAI as GameService
 
 st.set_page_config(
     page_title="Game Story Generator App" ,
