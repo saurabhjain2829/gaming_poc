@@ -26,6 +26,24 @@ MAIN_IMAGES_FOLDER_NAME = "images\\"
 
 FOLDER_WATCH_RETRY_MAX_COUNT = 3
 
+def get_gameprogression_section(prompt):
+    gameprogression={}
+    try:
+        if(prompt.story.islandMapProgression):
+            gameprogression["Island Map Progression"]=prompt.story.islandMapProgression
+        if(prompt.story.souvenirCollection):
+            gameprogression["Souvenir Collection"]=prompt.story.souvenirCollection
+        if(prompt.story.seasonalEvents):
+            gameprogression["Seasonal Events"]=prompt.story.seasonalEvents
+        if(prompt.story.achievementBadgesTrophies):
+            gameprogression["Achievement Badges & Trophies"]=prompt.story.achievementBadgesTrophies
+        if(prompt.story.progressiveJackpot):
+            gameprogression["Progressive Jackpot"]=prompt.story.progressiveJackpot
+        return "\n".join([f"- **{key}:** {value}" for key, value in gameprogression.items()])
+    except Exception as e:
+        print(f'Something went wrong: method: get_gameprogression_section : {e}')
+        return ""
+
 def get_new_images(imagesToRender,gameTitle: str):
     
     IMAGE_DIR = Path(gameUtils.create_directory_name(gameTitle,"images"))
@@ -243,7 +261,11 @@ def show_output(prompt):
                 if prompt.story and prompt.story.gameplay:
                  with st.expander("**Game Play**", expanded=True):
                     st.markdown(prompt.story.gameplay)
-        
+                    st.markdown(get_gameprogression_section(prompt))
+                    if prompt.story and prompt.story.monetizationStrategy:
+                        st.markdown("**Monetization Strategy**")
+                        st.markdown(prompt.story.monetizationStrategy)
+
                 # Subsection 3
                 if prompt.story.setting and prompt.story.setting.location:
                     with st.expander("**Location**", expanded=True):
