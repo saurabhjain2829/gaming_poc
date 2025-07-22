@@ -5,41 +5,34 @@ import time
 from PageHelper import process_data_prompt, initialize_session_state
 from UIFragements import show_output
 from schemas import GameDesignSchema 
-import GameService_azureOpenAI as GameService
+import GameService_azureOpenAI as game_service
+import base64
 
 st.set_page_config(
     page_title="Game Story Generator App" ,
     page_icon=":slot_machine:"
 )
 
-original_title = '<label style="font-family:Courier; color:Blue; font-size: xx-large; font-weight: bold;">Generate Game Story</label>'
+original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;">Generate Game Story</label>'
 st.markdown(original_title, unsafe_allow_html=True)
 
 initialize_session_state()
 
-def clear_form(): 
-  st.session_state["gamedescription"] = ""
-  st.session_state["bonusfeaturesoption"] = True
-  st.session_state["charactersoption"] = True
-  st.session_state["storiesoption"] = True
-  st.session_state["symbolsoption"] = True
-  st.session_state["visualstyleoption"] = True
-  st.session_state.shown_images = set()
-  st.session_state.show_story = False
+st.markdown("""
+            <style>
 
-# Folder to watch
-IMAGE_DIR = Path("images")
-if not IMAGE_DIR.exists():
-    IMAGE_DIR.mkdir()
+            .stCheckbox > label > div > div > div {
+                font-size: 0.9rem !important;
+            }
 
-def get_new_images():
-    image_files = sorted(IMAGE_DIR.glob("*.png"))  # Can filter for jpg/png if needed
-    new_images = []
-    for img in image_files:
-        if img.name not in st.session_state.shown_images:
-            new_images.append(img)
-            st.session_state.shown_images.add(img.name)
-    return new_images
+            .stMarkdownBadge {
+                background-color: lightgrey !important;
+                color:#4a4949 !important;
+            }
+            
+
+            </style>
+        """, unsafe_allow_html=True)
 def extract_exclude_options():
     story_options = {
            'bonusfeaturesoption': st.session_state["bonusfeaturesoption"], 
@@ -53,22 +46,38 @@ def extract_exclude_options():
     for key, value  in story_options.items():
         if value is False:
             exclude_sections.append(mapping_dict[key])
-    return exclude_sections 
-# Main loop to check for new images
-def display_images(image_count):
-    index = 0
-    while (index < image_count):
-        new_images = get_new_images()
-        if new_images:
-            for img_path in new_images:
-            #with placeholder.container():
-                #st.image(str(img_path), caption=img_path.name, use_column_width=True)
-                img = Image.open(img_path)
-                st.image(img, caption=img_path)
-                index = index + 1
-        time.sleep(1)  # Check every second
+    return exclude_sections
 
-resultoutput = "This is the JSON result"
+def clear_form(): 
+  st.session_state["gamedescription"] = ""
+  st.session_state["bonusfeaturesoption"] = True
+  st.session_state["charactersoption"] = True
+  st.session_state["storiesoption"] = True
+  st.session_state["symbolsoption"] = True
+  st.session_state["visualstyleoption"] = True
+  st.session_state.shown_images = set()
+  st.session_state.show_story = False
+
+# --- Function to set a local PNG image as the background ---
+def set_background(png_file):
+    with open(png_file, "rb") as image_file:
+        img_bytes = image_file.read()
+        encoded = base64.b64encode(img_bytes).decode()
+    st.markdown(
+        f"""
+        <style>
+        .stApp {{
+            background-image: url("data:image/png;base64,{encoded}");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-attachment: fixed;
+        }}
+        </style>
+        """,
+        unsafe_allow_html=True
+    )
+
+#set_background("background.png")
 
 #Form widgets
 gamedescription = st.text_area("Enter game description", key="gamedescription")
@@ -82,34 +91,16 @@ with checks[1]:
 with checks[2]:
     symbolsoption = st.checkbox("Symbols", key="symbolsoption")
 with checks[3]:
-    bonusfeaturesoption = st.checkbox("BonusFeatures", key="bonusfeaturesoption")
+    bonusfeaturesoption = st.checkbox("Bonus Features", key="bonusfeaturesoption")
 with checks[4]:
-    visualstyleoption = st.checkbox("VisualStyle", key="visualstyleoption")
+    visualstyleoption = st.checkbox("Visual Style", key="visualstyleoption")
 
-col1, col2 = st.columns([1, 1])
-with col1:
-    create = st.button("Create Story")
-    if create:
-        while True: 
-            with st.spinner("Preparing game story. Please wait.", show_time=True):
-                
-                
-                result = GameService.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
-                st.session_state.show_story = True
-                break
-        
-        #st.write(f"**Description:** {gamedescription}")
-        #st.write(f"**Result updated** {resultoutput}")
-        #process_data_prompt()
-        show_output(result)
-        #display_images(5)
-        #show_output()
+create = st.button("Create Story")
 
-with col2:
-    reset = st.button("Reset",on_click=clear_form)
-    #if reset:
-        #st.session_state.show_image = False
-
-# Cache to store already shown images
-#if 'shown_images' not in st.session_state:
-#     st.session_state.shown_images = set()
+if create:
+    while True: 
+        with st.spinner("Preparing game story. Please wait.", show_time=True):
+            result = game_service.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
+            st.session_state.show_story = True
+            break
+    show_output(result)

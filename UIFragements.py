@@ -4,17 +4,27 @@ import os
 from PageHelper import initialize_session_state
 from schemas import GameDesignSchema 
 from pathlib import Path
+import base64
 import time
 from PIL import Image
-
+import GameUtils as gameUtils
 initialize_session_state()
 
+MAIN_IMAGES_FOLDER_NAME = "images\\"
 # Folder to watch
-IMAGE_DIR = Path("images")
-if not IMAGE_DIR.exists():
-    IMAGE_DIR.mkdir()
+# IMAGE_DIR = Path("images")
+# if not IMAGE_DIR.exists():
+#     IMAGE_DIR.mkdir()
 
-def get_new_images(imagesToRender):
+FOLDER_WATCH_RETRY_MAX_COUNT = 3
+
+def get_new_images(imagesToRender,gameTitle: str):
+    
+    IMAGE_DIR = Path(gameUtils.create_directory_name(gameTitle,"images"))
+    if not IMAGE_DIR.exists():
+        IMAGE_DIR.mkdir()
+
+
     image_files = sorted(IMAGE_DIR.glob("*.png"))  # Can filter for jpg/png if needed
     new_images = []
     for img in image_files:
@@ -24,17 +34,22 @@ def get_new_images(imagesToRender):
 
     return new_images
 
-# Main loop to check for new images
-def display_images(image_count):
-    index = 0
-    while (index < image_count):
-        new_images = get_new_images()
-        if new_images:
-            for img_path in new_images:
-                img = Image.open(img_path)
-                st.image(img, caption=img_path)
-                index = index + 1
-        time.sleep(1)  # Check every second
+# # Main loop to check for new images
+# def display_images(image_count):
+#     index = 0
+#     while (index < image_count):
+#         new_images = get_new_images()
+#         if new_images:
+#             for img_path in new_images:
+#                 img = Image.open(img_path)
+#                 st.image(img, caption=img_path)
+#                 index = index + 1
+#         time.sleep(1)  # Check every second
+
+# Function to convert a local image to a Base64 string
+def get_image_base64(image_path):
+    with open(image_path, "rb") as img_file:
+        return base64.b64encode(img_file.read()).decode()
 
 
 # Customizing the expander widget with pink borders, blue bold headers, and ensuring expanders are opene
@@ -65,11 +80,21 @@ def show_output(prompt):
             .stDataFrame {
                 border: 2px solid red;
             }
+            
+            .stMarkdownColoredText {
+                font-size: xx-large !important;
+                font-style: italic !important;
+                color: #4a4949 !important; 
+            }
         
              /* Style for internal expander headers (Subsection titles) */
             details[open] > summary {
                 font-weight: bold;
-                color: brown;
+                color: grey;
+            }
+            
+            details[open] > summary > span > div {
+                font-size: x-large !important;
             }
             .internal-expander-header {
                 font-weight: bold;
@@ -80,26 +105,48 @@ def show_output(prompt):
             .stDataFrame {
                 border: 2px solid green !important;
             }
+            
+            .stCheckbox > label > div > div > div {
+                font-size: 0.9rem !important;
+            }
+            
+            .stCheckbox {
+                font-size: 0.9rem !important;
+            }
 
             /* Style for image borders in Section 5 */
             .image-border {
-                border: 2px solid red;
+                border: 5px solid red !important;
                 padding: 10px;
             }
+                    
+            .custom-table {
+                border-collapse: collapse;
+                width: 100%;
+                border: 2px solid black;
+            }
+            
+            .custom-table th, .custom-table td {
+                border: 2px solid black;
+                text-align: left;
+                padding: 8px;
+                vertical-align: top;
+            }
+            
+            .custom-table th {
+                background-color: brown; /* Light brown */
+            }
+            
             </style>
         """, unsafe_allow_html=True)
 
-        # Expander widget with five sections (all open by default)
-
-        # Section 1 - Paragraph Text
-        with st.expander(":dart: **Game Title**", expanded=True):
-        #with st.expander("📄 **Section 1: Game Title**", expanded=True):
-            st.markdown(prompt.gameTitle)
+        # Section 1 - tittle
+        st.write(f":grey[{prompt.gameTitle}]")
 
         # New Section 2 - Game Story
         if st.session_state['storiesoption']:
 
-            with st.expander(":palm_tree: **Core Story**", expanded=True):
+            with st.expander("**Core Story**", expanded=True):
                 # Subsection 1
                 with st.expander("**Summary**", expanded=True):
                     st.markdown(prompt.story.summary)
@@ -118,36 +165,37 @@ def show_output(prompt):
 
         # Section 3 - Visual Style
         if st.session_state['visualstyleoption']: 
-            with st.expander(":dart: **VisualStyle**", expanded=True):
+            with st.expander("**VisualStyle**", expanded=True):
                 st.markdown(prompt.visualStyle.artStyle)  
 
         # New Section 4 - Bonus Features
         if st.session_state['bonusfeaturesoption']:
 
-            with st.expander(":ferris_wheel: **Bonus Features**", expanded=True):
+            with st.expander("**Bonus Features**", expanded=True):
+                def section(title, kv_data: dict, color="#f5f5f5"):
+                    st.markdown(
+                        f"""
+                        <div style="border: 1px solid #ccc; background-color: {color}; border-radius: 8px; padding: 16px; margin-bottom: 20px;">
+                        <h6 style="color:grey;">{title}</h6>
+                        <ul>
+                            {''.join([f"<li><b>{k}:</b> {v}</li>" for k, v in kv_data.items()])}
+                        </ul>
+                        </div>
+                        """, unsafe_allow_html=True
+                    )
+
                 # Subsection 1
                 totalBonusFeatures = len(prompt.bonusFeatures)
                 for i in range(totalBonusFeatures):
-                    with st.expander(f":dancer: **{prompt.bonusFeatures[i].type}**", expanded=False):
-                        st.markdown(f"**Name:** {prompt.bonusFeatures[i].name}")
-                        st.markdown(f"**Description:** {prompt.bonusFeatures[i].description}")
-                        st.markdown(f"**Triggered By:**  {prompt.bonusFeatures[i].trigger}")
-
-                # Subsection 2
-                #with st.expander(":ferris_wheel: **Bonus Wheel**", expanded=False):
-                 #   st.markdown(f"**Name:** {prompt.bonusFeatures[1].name}")
-                  #  st.markdown(f"**Description:** {prompt.bonusFeatures[1].description}")
-                  #  st.markdown(f"**Triggered By:**  {prompt.bonusFeatures[1].trigger}")
-        
-                # Subsection 3
-                #with st.expander(":dancer: **Respin features**", expanded=False):
-                 #   st.markdown(f"**Name:** {prompt.bonusFeatures[2].name}")
-                 #   st.markdown(f"**Description:** {prompt.bonusFeatures[2].description}")
-                 #   st.markdown(f"**Triggered By:**  {prompt.bonusFeatures[2].trigger}")
-                
+                        section(f"{prompt.bonusFeatures[i].type}", {
+                                "Name": f" {prompt.bonusFeatures[i].name}",
+                                "Description": f" {prompt.bonusFeatures[i].description}",
+                                "Triggered By": f" {prompt.bonusFeatures[i].trigger}"
+                                })
+                        
         # New Section 4 - Characters Features
         if st.session_state['charactersoption']:
-            with st.expander(":crown: **Characters:**", expanded=True):
+            with st.expander("**Characters**", expanded=True):
             # Make sure you put your local image paths here
                 with st.spinner("Loading Characters. Please wait.", show_time=True):
                     totalCharacters = len(prompt.characters)
@@ -159,77 +207,235 @@ def show_output(prompt):
                         characterPathDescDict[imageName] = prompt.characters[i].description
                         
                     index = 0
-                    while (index < totalCharacters):
-                        new_images = get_new_images(characterImagesPath)
+                    maxRetryCount = (FOLDER_WATCH_RETRY_MAX_COUNT * totalCharacters)
+                    retryCount = 0
+                    while ((index < totalCharacters) and (retryCount < maxRetryCount)):
+                        new_images = get_new_images(characterImagesPath,prompt.gameTitle)
                         if new_images:
                             for img_path in new_images:
                                 img = Image.open(img_path)
-                                st.image(img)
-                                img = Image.open(img_path)
-                                st.write(characterPathDescDict.get(img_path.name))
+                                imgName = img_path.name.replace('_', ' ')
+                                imgName = imgName.replace('.png','')
+
+
+                                # Custom CSS to apply flexbox for equal height and border to col1
+                                st.markdown(
+                                    """
+                                    <style>
+                                    .stContainer > div > div {
+                                        display: flex;
+                                        align-items: stretch; /* Ensures columns stretch to equal height */
+                                    }
+                                    .stContainer .col1-bordered {
+                                        border: 2px solid #ccc;
+                                        border-radius: 10px;
+                                        padding: 10px; /* Add some padding inside the border */
+                                        display: flex; /* Use flex to vertically center image if needed */
+                                        align-items: center; /* Center image vertically within its bordered column */
+                                        justify-content: center; /* Center image horizontally within its bordered column */
+                                    }
+                                    </style>
+                                    """,
+                                    unsafe_allow_html=True
+                                )
+
+                                # inside your loop after getting each img_path
+                                with st.container():                                   
+                                    col1, col2 = st.columns([1, 3])
+
+                                    with col1:
+                                        # Apply a custom class to this column to add the border via CSS
+                                        encoded_image = get_image_base64(img_path)
+                                        image_data_url = f"data:image/png;base64,{encoded_image}" # Assuming PNG, adjust if needed
+                                        
+                                        st.markdown(
+                                            f"""
+                                            <div class="col1-bordered" style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                <img src="{image_data_url}" style="width: auto; height: auto; display: block;">
+                                            </div>
+                                            """,
+                                            unsafe_allow_html=True
+                                        )
+
+                                    with col2:
+                                        st.markdown(
+                                            f"""
+                                            <div style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                <p style="margin: 0;"><strong>{imgName}</strong></p>
+                                                <p style="margin: 0;">{characterPathDescDict.get(img_path.name)}</p>
+                                            </div>
+                                            """,
+                                            unsafe_allow_html=True
+                                        )
                                 index = index + 1
                                 #break
-                        time.sleep(1) 
+                        time.sleep(1)
+                        retryCount += 1
                         #break
-                    st.session_state.shown_images = set()
                     
-                    #for i in range(len(prompt.characters)):
-                        #imagepath = "images/" + prompt.characters[i].name + ".png"
-                        #if os.path.exists(imagepath):
-                            #st.image(imagepath, caption=prompt.characters[i].name)
-                            #st.write(prompt.characters[i].description)
+                    st.session_state.shown_images = set()
 
             # New Section 5 - Symbols Features
         if st.session_state['symbolsoption']:
 
-            with st.expander(":symbols: **Symbols**", expanded=True):
+            with st.expander("**Symbols**", expanded=True):
 
-                with st.expander(":gear: **RegularSymbols**", expanded=False):
-                    with st.spinner("Loading RegularSymbols. Please wait.", show_time=True):
+                with st.expander("**Regular Symbols**", expanded=True):
+                # Make sure you put your local image paths here
+                    with st.spinner("Loading Regular Symbols. Please wait.", show_time=True):
                         totalRegularSymbols = len(prompt.symbols.regularSymbols)
                         regularSymbolsImagesPath = []
                         regularSymbolsPathDescDict = {}
                         for i in range(totalRegularSymbols):
-                            imageName = prompt.symbols.regularSymbols[i].name.replace(' ', '_')  + ".png"
+                            imageName = prompt.symbols.regularSymbols[i].name.replace(' ', '_') + ".png"
                             regularSymbolsImagesPath.append(imageName)
                             regularSymbolsPathDescDict[imageName] = prompt.symbols.regularSymbols[i].description
-                        
+                            
                         index = 0
-                        while (index < totalRegularSymbols):
-                            new_images = get_new_images(regularSymbolsImagesPath)
+                        maxRetryCount = (FOLDER_WATCH_RETRY_MAX_COUNT * totalRegularSymbols)
+                        retryCount = 0
+                        while ((index < totalRegularSymbols) and (retryCount < maxRetryCount)):
+                            new_images = get_new_images(regularSymbolsImagesPath,prompt.gameTitle)
                             if new_images:
                                 for img_path in new_images:
                                     img = Image.open(img_path)
-                                    st.image(img)
-                                    img = Image.open(img_path)
-                                    st.write(regularSymbolsPathDescDict.get(img_path.name))
+                                    imgName = img_path.name.replace('_', ' ')
+                                    imgName = imgName.replace('.png','')
+
+
+                                    # Custom CSS to apply flexbox for equal height and border to col1
+                                    st.markdown(
+                                        """
+                                        <style>
+                                        .stContainer > div > div {
+                                            display: flex;
+                                            align-items: stretch; /* Ensures columns stretch to equal height */
+                                        }
+                                        .stContainer .col1-bordered {
+                                            border: 2px solid #ccc;
+                                            border-radius: 10px;
+                                            padding: 10px; /* Add some padding inside the border */
+                                            display: flex; /* Use flex to vertically center image if needed */
+                                            align-items: center; /* Center image vertically within its bordered column */
+                                            justify-content: center; /* Center image horizontally within its bordered column */
+                                        }
+                                        </style>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+
+                                    # inside your loop after getting each img_path
+                                    with st.container():                                   
+                                        col1, col2 = st.columns([1, 3])
+
+                                        with col1:
+                                            # Apply a custom class to this column to add the border via CSS
+                                            encoded_image = get_image_base64(img_path)
+                                            image_data_url = f"data:image/png;base64,{encoded_image}" # Assuming PNG, adjust if needed
+                                            
+                                            st.markdown(
+                                                f"""
+                                                <div class="col1-bordered" style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                    <img src="{image_data_url}" style="width: auto; height: auto; display: block;">
+                                                </div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
+
+                                        with col2:
+                                            st.markdown(
+                                                f"""
+                                                <div style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                    <p style="margin: 0;"><strong>{imgName}</strong></p>
+                                                    <p style="margin: 0;">{regularSymbolsPathDescDict.get(img_path.name)}</p>
+                                                </div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
                                     index = index + 1
                                     #break
-                            time.sleep(1) 
+                            time.sleep(1)
+                            retryCount += 1
                             #break
+                        
                         st.session_state.shown_images = set()
 
-                with st.expander(":atom_symbol: **SpecialSymbols**", expanded=False):
-                    with st.spinner("Loading SpecialSymbols. Please wait.", show_time=True):
+                with st.expander("**Special Symbols**", expanded=True):
+                # Make sure you put your local image paths here
+                    with st.spinner("Loading Special Symbols. Please wait.", show_time=True):
                         totalSpecialSymbols = len(prompt.symbols.specialSymbols)
                         specialSymbolsImagesPath = []
                         specialSymbolsPathDescDict = {}
                         for i in range(totalSpecialSymbols):
-                            imageName = prompt.symbols.specialSymbols[i].name.replace(' ', '_')  + ".png"
+                            imageName = prompt.symbols.specialSymbols[i].name.replace(' ', '_') + ".png"
                             specialSymbolsImagesPath.append(imageName)
                             specialSymbolsPathDescDict[imageName] = prompt.symbols.specialSymbols[i].description
-                        
+                            
                         index = 0
-                        while (index < totalSpecialSymbols):
-                            new_images = get_new_images(specialSymbolsImagesPath)
+                        maxRetryCount = (FOLDER_WATCH_RETRY_MAX_COUNT * totalSpecialSymbols)
+                        retryCount = 0
+                        while ((index < totalSpecialSymbols) and (retryCount < maxRetryCount)):
+                            new_images = get_new_images(specialSymbolsImagesPath,prompt.gameTitle)
                             if new_images:
                                 for img_path in new_images:
                                     img = Image.open(img_path)
-                                    st.image(img)
-                                    img = Image.open(img_path)
-                                    st.write(specialSymbolsPathDescDict.get(img_path.name))
+                                    imgName = img_path.name.replace('_', ' ')
+                                    imgName = imgName.replace('.png','')
+
+
+                                    # Custom CSS to apply flexbox for equal height and border to col1
+                                    st.markdown(
+                                        """
+                                        <style>
+                                        .stContainer > div > div {
+                                            display: flex;
+                                            align-items: stretch; /* Ensures columns stretch to equal height */
+                                        }
+                                        .stContainer .col1-bordered {
+                                            border: 2px solid #ccc;
+                                            border-radius: 10px;
+                                            padding: 10px; /* Add some padding inside the border */
+                                            display: flex; /* Use flex to vertically center image if needed */
+                                            align-items: center; /* Center image vertically within its bordered column */
+                                            justify-content: center; /* Center image horizontally within its bordered column */
+                                        }
+                                        </style>
+                                        """,
+                                        unsafe_allow_html=True
+                                    )
+
+                                    # inside your loop after getting each img_path
+                                    with st.container():                                   
+                                        col1, col2 = st.columns([1, 3])
+
+                                        with col1:
+                                            # Apply a custom class to this column to add the border via CSS
+                                            encoded_image = get_image_base64(img_path)
+                                            image_data_url = f"data:image/png;base64,{encoded_image}" # Assuming PNG, adjust if needed
+                                            
+                                            st.markdown(
+                                                f"""
+                                                <div class="col1-bordered" style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                    <img src="{image_data_url}" style="width: auto; height: auto; display: block;">
+                                                </div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
+
+                                        with col2:
+                                            st.markdown(
+                                                f"""
+                                                <div style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
+                                                    <p style="margin: 0;"><strong>{imgName}</strong></p>
+                                                    <p style="margin: 0;">{specialSymbolsPathDescDict.get(img_path.name)}</p>
+                                                </div>
+                                                """,
+                                                unsafe_allow_html=True
+                                            )
                                     index = index + 1
-                                   # break
+                                    #break
                             time.sleep(1)
+                            retryCount += 1
                             #break
+                        
                         st.session_state.shown_images = set()

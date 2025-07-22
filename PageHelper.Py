@@ -11,6 +11,7 @@ def initialize_session_state():
         st.session_state["visualstyleoption"] = True
         st.session_state.shown_images = set()
         st.session_state.show_story = False
+        st.session_state.table_data = []
 
 initialize_session_state()
 
