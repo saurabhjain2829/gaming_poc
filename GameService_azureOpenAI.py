@@ -2,12 +2,13 @@ import yaml
 from pydantic.v1 import BaseSettings, Field
 import threading
 import asyncio
-
+import time
 from langchain_openai import AzureChatOpenAI
 from langchain.prompts import PromptTemplate
 from langchain.chains import LLMChain
 from langchain.output_parsers import PydanticOutputParser
 from typing import List, Dict
+from langchain_core.exceptions import OutputParserException
 
 import ImageGeneratorService_nebius as image_service
 from schemas import GameDesignSchema
@@ -56,21 +57,36 @@ def generate_game_details(user_input, exclude_sections):
         verbose=True
     )
 
-    exclude_sections_text = [
-        f'User does not want {section} in the output.'
-        for section in exclude_sections
-    ]
-
-    result = chain.run({
-        "input_text": user_input,
-        "exclude_sections": "\n".join(exclude_sections_text)
+    
+    include_prompt, exclude_prompt = generate_dynamic_prompt_elements(exclude_sections)
+    
+    result = safe_run_chain(chain, {
+    "input_text": user_input,
+    "include_prompt": include_prompt,
+    "exclude_prompt": exclude_prompt
     })
+    #result=chain.run({"input_text": user_input, "include_prompt": include_prompt, "exclude_prompt" : exclude_prompt})
+    if not result:
+        print("[Failure] No game details generated.")
+        return None
 
     run_image_generator(extract_symbols(result), extract_visual_style(result), extract_game_title(result))
     run_image_generator(extract_characters(result), extract_visual_style(result), extract_game_title(result))
 
     print(result)
     return result
+
+def safe_run_chain(chain, inputs, retries=2):
+    for attempt in range(1, retries + 1):
+        try:
+            return chain.run(inputs)
+        except OutputParserException as e:
+            print(f"[Attempt {attempt}] Parsing Error: {e}")
+            time.sleep(1)  # slight delay before retry
+        except Exception as e:
+            print(f"[Attempt {attempt}] Unexpected Error: {e}")
+            break
+    return None
 
 def run_image_generator(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
     if symbols:
@@ -88,9 +104,16 @@ def extract_symbols(schema: GameDesignSchema) -> List[Dict[str, str]]:
         return []
 
     all_symbols = []
-    for symbol in (schema.symbols.regularSymbols or []):
+    for symbol in (schema.symbols.lowPaySymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
-    for symbol in (schema.symbols.specialSymbols or []):
+
+    for symbol in (schema.symbols.royalSymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.highPaySymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.wildSymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.scatterSymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
 
     return all_symbols
@@ -106,3 +129,22 @@ def extract_visual_style(schema: GameDesignSchema) -> str:
 
 def extract_game_title(schema: GameDesignSchema) -> str:
     return schema.gameTitle if schema.gameTitle else ""
+
+def generate_dynamic_prompt_elements(exclude_sections):
+    dynamic_elements ={"symbols":""" \n Symbols
+  - Low Pay Symbols
+  - Royal Symbols
+  - High Pay Symbols
+  - Wild Symbols
+  - Scatter symbols
+    Symbols Match the Theme and Tone""",
+  "characters":""" \n Characters Match the Theme and Tone.  """,
+  "bonusfeatures" :""" \n Bonus Features (e.g., free spins, multipliers, bonus wheels, jackpot features). """}
+    exclude_prompt = "Exclude " if len(exclude_sections)>0 else ""
+    include_prompt =""" """
+    for key, value in dynamic_elements.items():
+        if(key in exclude_sections):
+          exclude_prompt += " \n - " + key
+        else:
+            include_prompt +=   value +" \n "
+    return include_prompt, exclude_prompt

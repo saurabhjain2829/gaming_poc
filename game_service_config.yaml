@@ -4,51 +4,45 @@ llm:
 
 prompt:
   template: |
-    **User Input:**
-        {input_text}
-        {exclude_sections}
-    ***Instruction***:
-    As a game designer , I want to create a story driven slot game concept based on User Input.
-    Customize as per the User Input.
-    Consider player's nature from User Input if available
-    Consider core story from User Input if available
-    Consider platform from User Input if available
-    Consider reel layout from User Input if available
-    Consider tone from User Input if available.
-    Consider theme from User Input if available.
-    Limit the number of characters to 3.
-    If a certain input is missing, make an educated guess based on the User Input and context.
-    Make the concept original, appealing, and aligned with the given theme. Include the unique twists.
-    If specified to not include characters in the output. Do not include characters
-    Else include characters
-    If specified to not include bonusFeatures in the output. Do not include bonusFeatures
-    Else include bonusFeatures
-    If specified to not include symbols in the output. Do not include symbols
-    Else include symbols
-    If specified to not include visualStyle in the output. Do not include visualStyle
-    Else include visualStyle
+    **Role:**
+        You are a professional slot game designer tasked with creating an immersive, narrative-driven slot game concept.
  
-    **Context:** A story-based slot game concept
-    consider [player's type like e.g casual , aggressive].
-    Narrative led slot game experience is appreciated.
-    The slot game has an engaging story that explains the setting, the [core story].
-    The game has a [theme e.g Adventure & Exploration, Classic & Retro, Fantasy , Sci-ficion ].
-    The game has a [tone like e.g Humourous, Luxurious, Heroic].
-   
-    The game story progresses through mechanics like [ like e.g level-ups, unlocking reels, completing chapter].
+        **Objective:**
+        Based on the User Input below, design a unique story-rich slot game concept. The concept should reflect the tone, theme, player characteristics and preferences provided, while ensuring engaging gameplay and progression mechanics.
  
-    The game characters match the story.
-    The game characters match the tone.
+        **Instructions:**
+        Create a narrative-led slot game concept with a clear storyline, setting, and progression system.
+        Content Requirements:
+        Include the following in the game concept:
+        Story
+          - Summary: Provide a detailed narrative summary (max 250 words).
  
-   
-    The reels of the slot game match thematic symbol , symbols can be of type [symbols type like e.g Regular, Scatter Symbols].
-    The symbols match the theme and tone.
-   
-    The game has [bonus features like e.g. Free Spins, Progressive Jackpots, Respin features, Bonus wheels] to enhance engagement.
-    The game has to be adaptable for [platforms like e.g.  mobile , desktop].
-    The slot games have reel with [reel layout size  e.g. 4x4 reels].
+          - Game Play : Design detailed (minimum 250 words) unique progression features (e.g., Progressive Jackpots, Collection Mechanics, Story & Adventure Progression, Achievement Badges & Trophies).
  
-    The game has a final hook , a punch line that sort of challeges and arouse curosity in the player.
-    The story and elements will be used a guide for developing a slot game.
+          - Monetization Strategy: Explain how the game play drive monetization.
  
+          - Final Hook: Conclude with a compelling tagline or hook to build curiosity.
+ 
+        Platform (["mobile", "desktop", "cross-platform"])
+ 
+        If tone or slot size is not specified in User Input, choose one appropriate for the theme
+        Tone (e.g., Fun & Playful, Sci-Fi Adventure, Humorous & Wacky)
+ 
+        Slot Size (e.g., 5x3)
+ 
+        {include_prompt}
+ 
+        If Visual Style is not specified in User Input, choose one appropriate for the theme
+        Visual Style (e.g., 2D comic style , futuristic 2D look).
+ 
+        UniqueTwists
+        - 1-2 suggestions based on story
+ 
+        **User Input:** {input_text}
+ 
+        {exclude_prompt}
+ 
+        Creative Freedom:
+        If any details are missing from the user input, infer or creatively expand while maintaining coherence and uniqueness.
+        **output format:** Output as per given schema
         {format_instructions}

@@ -101,6 +101,11 @@ if create:
     while True: 
         with st.spinner("Preparing game story. Please wait.", show_time=True):
             result = game_service.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
-            st.session_state.show_story = True
-            break
+            if result is None:
+                st.error("Failed to generate game details. Please try again.")
+                st.session_state.show_story = False
+                break
+            else:
+                st.session_state.show_story = True
+                break
     show_output(result)

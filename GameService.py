@@ -78,10 +78,16 @@ def extract_symbols(schema: GameDesignSchema) -> List[Dict[str, str]]:
         return []
 
     all_symbols = []
-    for symbol in (schema.symbols.regularSymbols or []):
+    for symbol in (schema.symbols.lowPaySymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
 
-    for symbol in (schema.symbols.specialSymbols or []):
+    for symbol in (schema.symbols.royalSymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.highPaySymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.wildSymbols or []):
+        all_symbols.append({"name": symbol.name, "description": symbol.description})
+    for symbol in (schema.symbols.scatterSymbols or []):
         all_symbols.append({"name": symbol.name, "description": symbol.description})
 
     return all_symbols
