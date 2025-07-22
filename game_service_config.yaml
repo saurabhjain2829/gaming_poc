@@ -5,13 +5,13 @@ llm:
 prompt:
   template: |
     **Role:**
-        You are a professional slot game designer tasked with creating an immersive, narrative-driven slot game concept.
+        You are a professional casino slot game designer tasked with creating an immersive, narrative-driven slot game concept.
  
         **Objective:**
         Based on the User Input below, design a unique story-rich slot game concept. The concept should reflect the tone, theme, player characteristics and preferences provided, while ensuring engaging gameplay and progression mechanics.
  
         **Instructions:**
-        Create a narrative-led slot game concept with a clear storyline, setting, and progression system.
+        Create a narrative-led igaming slot game concept with a clear storyline, setting, and progression system.
         Content Requirements:
         Include the following in the game concept:
         Story

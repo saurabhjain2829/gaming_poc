@@ -24,7 +24,7 @@ MAIN_IMAGES_FOLDER_NAME = "images\\"
 # if not IMAGE_DIR.exists():
 #     IMAGE_DIR.mkdir()
 
-FOLDER_WATCH_RETRY_MAX_COUNT = 3
+FOLDER_WATCH_RETRY_MAX_COUNT = 20
 
 def get_gameprogression_section(prompt):
     gameprogression={}
@@ -394,24 +394,24 @@ def show_output(prompt):
 
             with st.expander("**Symbols**", expanded=True):
  
-                with st.expander("**LowPay Symbols**", expanded=False):
+                with st.expander("**HighPay Symbols**", expanded=True):
+                    with st.spinner("Loading HighPay Symbols. Please wait.", show_time=True):
+                         process_symbols(prompt.symbols.highPaySymbols,prompt.gameTitle)
+                         
+                with st.expander("**LowPay Symbols**", expanded=True):
                     with st.spinner("Loading LowPay Symbols. Please wait.", show_time=True):
                         process_symbols(prompt.symbols.lowPaySymbols,prompt.gameTitle)
  
-                with st.expander("**Royal Symbols**", expanded=False):
+                with st.expander("**Royal Symbols**", expanded=True):
                     with st.spinner("Loading Royal Symbols. Please wait.", show_time=True):
                         process_symbols(prompt.symbols.royalSymbols,prompt.gameTitle)
  
-                with st.expander("**HighPay Symbols**", expanded=False):
-                    with st.spinner("Loading HighPay Symbols. Please wait.", show_time=True):
-                         process_symbols(prompt.symbols.highPaySymbols,prompt.gameTitle)
- 
- 
-                with st.expander("**Wild Symbols**", expanded=False):
+                
+                with st.expander("**Wild Symbols**", expanded=True):
                     with st.spinner("Loading Wild Symbols. Please wait.", show_time=True):
                         process_symbols(prompt.symbols.wildSymbols,prompt.gameTitle)
  
-                with st.expander("**Scatter Symbols**", expanded=False):
+                with st.expander("**Scatter Symbols**", expanded=True):
                     with st.spinner("Loading Scatter Symbols. Please wait.", show_time=True):
                         process_symbols(prompt.symbols.scatterSymbols,prompt.gameTitle)
 

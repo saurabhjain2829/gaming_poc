@@ -12,6 +12,7 @@ from langchain_core.exceptions import OutputParserException
 
 import ImageGeneratorService_nebius as image_service
 from schemas import GameDesignSchema
+from dotenv import load_dotenv
 
 # === Environment Settings ===
 class EnvironmentSettings(BaseSettings):
@@ -131,20 +132,36 @@ def extract_game_title(schema: GameDesignSchema) -> str:
     return schema.gameTitle if schema.gameTitle else ""
 
 def generate_dynamic_prompt_elements(exclude_sections):
-    dynamic_elements ={"symbols":""" \n Symbols
-  - Low Pay Symbols
-  - Royal Symbols
-  - High Pay Symbols
-  - Wild Symbols
-  - Scatter symbols
-    Symbols Match the Theme and Tone""",
-  "characters":""" \n Characters Match the Theme and Tone.  """,
-  "bonusfeatures" :""" \n Bonus Features (e.g., free spins, multipliers, bonus wheels, jackpot features). """}
-    exclude_prompt = "Exclude " if len(exclude_sections)>0 else ""
-    include_prompt =""" """
-    for key, value in dynamic_elements.items():
-        if(key in exclude_sections):
-          exclude_prompt += " \n - " + key
-        else:
-            include_prompt +=   value +" \n "
-    return include_prompt, exclude_prompt
+    dynamic_elements ={"""Symbols
+
+Include 5 Low Pay Symbols, between 3 to 5 Royal Symbols (e.g., A, K, Q, J, 10, 9), 5 High Pay Symbols, 2 to 4 Wild Symbols, and 1 to 2 Scatter Symbols.
+
+Each symbol should match the game’s theme and tone, with a detailed visual description suitable for generating theme-relevant images.
+
+Descriptions should support both thematic consistency and visual design needs.
+Map the details like visual description and symbol description etc to description field.                      
+
+Characters
+
+Describe the main characters featured in the game.
+
+Ensure that each character is aligned with the theme and tone of the game.
+
+Provide detailed visual and personality descriptions that can be used to generate relevant artwork.
+
+Bonus Features
+
+Include at least four bonus features such as Free Spins, Free Rounds, Mini Games, Multipliers, Bonus Wheels, and Jackpot Features.
+
+Describe each bonus feature in detail and ensure it ties into both the overall gameplay mechanics and the game theme.
+
+Bonus features should be engaging, thematic, and distinct from each other. """}
+    # exclude_prompt = "Exclude " if len(exclude_sections)>0 else ""
+    # include_prompt =""" """
+    # for key, value in dynamic_elements.items():
+    #     if(key in exclude_sections):
+    #       exclude_prompt += " \n - " + key
+    #     else:
+    #         include_prompt +=   value +" \n "
+    # return include_prompt, exclude_prompt
+    return dynamic_elements, ""

@@ -25,7 +25,7 @@ class Character(BaseModel):
 class Symbol(BaseModel):
     name: str
     description: str
-    type: str
+    
  
 class Symbols(BaseModel):
     lowPaySymbols: List[Symbol]
