@@ -32,7 +32,7 @@ st.set_page_config(
     page_icon = page_icon
 )
 
-original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;">Generate Game Story</label>'
+original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;"><h1>Game Concept Generator</h1></label>'
 st.markdown(original_title, unsafe_allow_html=True)
 
 init_db()
