@@ -241,3 +241,4 @@ if create:
 
 with placeholder.container():
     show_output(st.session_state.story_output)
+    

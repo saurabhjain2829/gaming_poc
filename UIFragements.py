@@ -77,10 +77,12 @@ def process_symbols(symbolsList: List[Symbol] ,gameTitle: str ):
     totalSymbols = len(symbolsList)
     SymbolsImagesPath = []
     SymbolsPathDescDict = {}
+    SymbolsPathNameDict = {}
     for i in range(totalSymbols):
-        imageName = symbolsList[i].name.replace(' ', '_') + ".png"
+        imageName = gameUtils.remove_special_symbols(symbolsList[i].name) + ".png"
         SymbolsImagesPath.append(imageName)
         SymbolsPathDescDict[imageName] = symbolsList[i].description
+        SymbolsPathNameDict[imageName] = symbolsList[i].name
         
     index = 0
     maxRetryCount = (FOLDER_WATCH_RETRY_MAX_COUNT * totalSymbols)
@@ -137,7 +139,7 @@ def process_symbols(symbolsList: List[Symbol] ,gameTitle: str ):
                         st.markdown(
                             f"""
                             <div style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
-                                <p style="margin: 0;"><strong>{imgName}</strong></p>
+                                <p style="margin: 0;"><strong>{SymbolsPathNameDict.get(img_path.name)}</strong></p>
                                 <p style="margin: 0;">{SymbolsPathDescDict.get(img_path.name)}</p>
                             </div>
                             """,
@@ -301,10 +303,12 @@ def show_output(prompt):
                     totalCharacters = len(prompt.characters)
                     characterImagesPath = []
                     characterPathDescDict = {}
+                    characterPathNameDict = {}
                     for i in range(totalCharacters):
-                        imageName = prompt.characters[i].name.replace(' ', '_') + ".png"
+                        imageName = gameUtils.remove_special_symbols(prompt.characters[i].name) + ".png"
                         characterImagesPath.append(imageName)
                         characterPathDescDict[imageName] = prompt.characters[i].description
+                        characterPathNameDict[imageName] = prompt.characters[i].name
                         
                     index = 0
                     maxRetryCount = (FOLDER_WATCH_RETRY_MAX_COUNT * totalCharacters)
@@ -361,7 +365,7 @@ def show_output(prompt):
                                         st.markdown(
                                             f"""
                                             <div style="padding: 10px; border: 2px solid #ccc; border-radius: 10px; height: 160px;">
-                                                <p style="margin: 0;"><strong>{imgName}</strong></p>
+                                                <p style="margin: 0;"><strong>{characterPathNameDict.get(img_path.name)}</strong></p>
                                                 <p style="margin: 0;">{characterPathDescDict.get(img_path.name)}</p>
                                             </div>
                                             """,

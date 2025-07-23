@@ -82,7 +82,7 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
     print(image_input)
     image_name = image_input["name"]
     image_description = image_input["description"]
-    filename = f"{image_name.replace(' ', '_')}{extension}"
+    filename = f"{gameUtils.remove_special_symbols(image_name)}{extension}"
     directory_name = gameUtils.create_directory_name(gameTitle, folder_name)
     os.makedirs(directory_name, exist_ok=True)
 
