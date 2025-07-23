@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 import os
-from PageHelper import initialize_session_state
+from PageHelper import initialize_session_state, get_image_base64
 from schemas import GameDesignSchema
 from schemas import Symbol
 from pathlib import Path
@@ -72,11 +72,6 @@ def get_new_images(imagesToRender,gameTitle: str):
 #                 st.image(img, caption=img_path)
 #                 index = index + 1
 #         time.sleep(1)  # Check every second
-
-# Function to convert a local image to a Base64 string
-def get_image_base64(image_path):
-    with open(image_path, "rb") as img_file:
-        return base64.b64encode(img_file.read()).decode()
 
 def process_symbols(symbolsList: List[Symbol] ,gameTitle: str ):
     totalSymbols = len(symbolsList)

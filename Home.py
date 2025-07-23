@@ -2,7 +2,7 @@ import streamlit as st
 from PIL import Image
 from pathlib import Path
 import time
-from PageHelper import process_data_prompt, initialize_session_state
+from PageHelper import process_data_prompt, initialize_session_state, get_image_base64
 from UIFragements import show_output
 from schemas import GameDesignSchema 
 import GameService_azureOpenAI as game_service
@@ -10,9 +10,26 @@ import base64
 from DatabaseService import init_db, get_all_chats_from_db, save_chat_to_db, load_chat_from_db
 from datetime import datetime
 
+logo_image_base64 = get_image_base64("logo.gif")
+
+st.markdown(f"""
+    <style>
+    .top-left-image {{
+        position: fixed;
+        top: 5px;
+        left: 50px; /* offset to the right of sidebar */
+        width: 80px;
+        z-index: 99999999;
+    }}
+    </style>
+    <img class="top-left-image" src="data:image/gif;base64,{logo_image_base64}" />
+""", unsafe_allow_html=True)
+
+page_icon = Image.open("app_icon.ico")
+
 st.set_page_config(
     page_title="Game Story Generator App" ,
-    page_icon=":slot_machine:"
+    page_icon = page_icon
 )
 
 original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;">Generate Game Story</label>'
@@ -43,6 +60,17 @@ st.markdown("""
                 padding-right: 8px !important;
                 overflow-y: auto !important;
             }
+            button[kind="primary"] {
+                background-color: white !important;
+                color: black !important;
+                border: lightgrey  !important;
+                width: 200px !important;
+                text-align: left !important;
+                white-space: nowrap !important;         /* Prevents text from wrapping */
+                overflow: hidden !important;            /* Hides overflow */
+                text-overflow: ellipsis !important; 
+            }
+
             </style>
         """, unsafe_allow_html=True)
 def extract_exclude_options():
@@ -70,6 +98,11 @@ def clear_form():
   st.session_state.shown_images = set()
   st.session_state.show_story = False
 
+def clear_screen():
+    st.session_state.shown_images = set()
+    st.session_state.show_story = False
+    st.session_state.story_output = None
+
 def get_story_options() :
     story_options =  {
            'bonusfeaturesoption': st.session_state["bonusfeaturesoption"], 
@@ -80,6 +113,11 @@ def get_story_options() :
            }
     return story_options
 
+def format_string_fixed_length(s, length=30):
+    if len(s) > length:
+        return s[:length - 3] + '...'
+    else:
+        return s.ljust(length)
 # --- Function to set a local PNG image as the background ---
 def set_background(png_file):
     with open(png_file, "rb") as image_file:
@@ -111,10 +149,9 @@ with st.sidebar:
 
         # Truncate label text at 30 characters
         display_name = chat_name.split('_')[0]
-        display_name = display_name if len(display_name) <= 30 else display_name[:30] + "..."
-        #display_name = chat_name if len(chat_name) <= 30 else chat_name[:30] + "..."
+        display_name = format_string_fixed_length(display_name)
         
-        if st.button(f"{display_name}", key=f"chat_{chat_name}", help=f"{chat_name}"):
+        if st.button(f"{display_name}", key=f"chat_{chat_name}", help=f"{chat_name}", type="primary"):
 
             input_obj, output_obj = load_chat_from_db(chat_name)
 
@@ -139,7 +176,7 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
 
 #Form widgets
-gamedescription = st.text_area("Enter game description", key="gamedescription")
+gamedescription = st.text_area("Enter game description", key="gamedescription",height=150)
 
 #st.badge("Enrich game story with Add-ons")
 checks = st.columns(5)
@@ -154,7 +191,7 @@ with checks[3]:
 with checks[4]:
     visualstyleoption = st.checkbox("Visual Style", key="visualstyleoption")
 
-create = st.button("Create Story")
+create = st.button("Generate Concept")
 
 placeholder = st.empty()
 
