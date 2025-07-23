@@ -156,7 +156,11 @@ with checks[4]:
 
 create = st.button("Create Story")
 
+placeholder = st.empty()
+
 if create:
+
+    placeholder = st.empty()
     while True: 
         with st.spinner("Generating game story. Please wait.", show_time=True):
             result = game_service.generate_game_details( st.session_state["gamedescription"],extract_exclude_options())
@@ -185,4 +189,5 @@ if create:
 
                 break
 
-show_output(st.session_state.story_output)
+with placeholder.container():
+    show_output(st.session_state.story_output)

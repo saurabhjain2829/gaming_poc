@@ -20,7 +20,7 @@ model = config["nebius"]["model"]
 base_url = config["nebius"]["base_url"]
 response_extension = config["nebius"]["response_extension"]
 response_format = config["nebius"]["response_format"]
-
+image_generation_enable= config["image_generation_enable"]
 width = config["image"]["width"]
 height = config["image"]["height"]
 extension = config["image"]["extension"]
@@ -91,22 +91,24 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
     if os.path.exists(filepath):
         print(f"Already exists: {filepath}")
         return f"Skipped (already exists): {filepath}"
+    if image_generation_enable:
+            prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
+            print(prompt)
 
-    prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
-    print(prompt)
-
-    max_attempts = 3
-    for attempt in range(1, max_attempts + 1):
-        try:
-            result = await asyncio.to_thread(sync_generate, prompt, filepath, directory_name)
-            return result
-        except Exception as e:
-            print(f"[Attempt {attempt}/{max_attempts}] Error during image generation: {e}")
-            if attempt < max_attempts:
-                await asyncio.sleep(1)
-            else:
-                print(f"Final failure for input: {image_input} with prompt: {prompt}")
-                return handle_no_image_found(filepath)
+            max_attempts = 3
+            for attempt in range(1, max_attempts + 1):
+                try:
+                    result = await asyncio.to_thread(sync_generate, prompt, filepath, directory_name)
+                    return result
+                except Exception as e:
+                    print(f"[Attempt {attempt}/{max_attempts}] Error during image generation: {e}")
+                    if attempt < max_attempts:
+                        await asyncio.sleep(1)
+                    else:
+                        print(f"Final failure for input: {image_input} with prompt: {prompt}")
+                        return handle_no_image_found(filepath)
+    else:
+        return handle_no_image_found(filepath)
 
 async def generate_all(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
     tasks = [generate_sketch(symbol, art_style, gameTitle) for symbol in symbols]
