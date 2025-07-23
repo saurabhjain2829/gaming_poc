@@ -3,6 +3,7 @@ from pydantic import BaseModel
  
 class Story(BaseModel):
     summary: str
+    theme: str
     gameplay: str
     baseSpinMechanics: str
     bonusTriggersCollectionSystems: str

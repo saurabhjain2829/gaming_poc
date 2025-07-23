@@ -103,7 +103,7 @@ def set_background(png_file):
 
 # ---------- Sidebar Chat Tree ----------
 with st.sidebar:
-    st.markdown("## Previous Game Stories")
+    st.markdown("## Game Stories")
     st.markdown('<div class="sidebar-container">', unsafe_allow_html=True)
     for chat_name in st.session_state.chat_names:
         is_selected = (chat_name == st.session_state.selected_chat)

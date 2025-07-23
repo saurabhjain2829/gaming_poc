@@ -19,7 +19,8 @@ prompt:
     
     5. Story 
       5.1 Summary :  (Max 250 words) Write a narrative backstory based on  the theme. Establish the setting, key characters, and the player's overarching goal. Describe the world, conflict, and any mystery or treasure that drives the slot's progression.
-      5.2 GamePlay :  (Minimum 250 words) Describe the full game loop.
+      5.2 Theme :  (20 Words) Write a concise summary describing the overall theme without mentioning any character names.
+      5.3 GamePlay :  (Minimum 250 words) Describe the full game loop.
       Game Play Progression experience in the following sub-sections:
        - Base Spin Mechanics: Detail how the core slot functions: spin direction, win logic, reel behavior, and any base-level modifiers (e.g., sticky wilds, cascading symbols, etc.).
        -  Bonus Triggers & Collection Systems : Explain how bonuses are triggered and how collection mechanics work (e.g., cash collect, scatter activation, symbol upgrades). Tie these mechanics to the Theme & feature ideas
@@ -32,7 +33,7 @@ prompt:
        - Daily Missions, Seasonal Events & Achievements:  Describe systems designed for retention: rotating missions, limited-time events, achievement rewards, progression ladders, etc.
        - Narrative Progression & Evolving Mechanics: Explain how the story unfolds alongside gameplay: unlocking lore, chapters, visual changes to reels, evolving game features, or character-driven mini-goals.
 
-      5.3 Monetization Strategy :  **Map the result to the output JSON schema field story.monetizationStrategy**
+      5.4 Monetization Strategy :  **Map the result to the output JSON schema field story.monetizationStrategy**
         Explain how the game supports monetization through gameplay:
         Bet multipliers and unlock tiers
         Feature gating by level or item count

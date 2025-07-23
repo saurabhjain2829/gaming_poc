@@ -61,7 +61,7 @@ def sync_generate(prompt: str, filepath: str, directory_name: str) -> str:
             "width": width,
             "height": height,
             "num_inference_steps": 28,
-            "negative_prompt": "",
+            "negative_prompt": "blurry, cropped, out of frame, distorted, low quality, disfigured, incomplete, partial body, poor composition",
             "seed": -1,
             "loras": None
         }
@@ -71,14 +71,14 @@ def sync_generate(prompt: str, filepath: str, directory_name: str) -> str:
     image_data = base64.b64decode(image_b64)
     image = Image.open(BytesIO(image_data))
 
-    if resize_enabled:
-        image = image.resize((resize_width, resize_height), Image.LANCZOS)
+    # if resize_enabled:
+    #     image = image.resize((resize_width, resize_height), Image.LANCZOS)
 
     os.makedirs(directory_name, exist_ok=True)
     image.save(filepath)
     return f"Saved: {filepath}"
 
-async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle: str):
+async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle: str,game_theme: str):
     print(image_input)
     image_name = image_input["name"]
     image_description = image_input["description"]
@@ -92,7 +92,8 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
         print(f"Already exists: {filepath}")
         return f"Skipped (already exists): {filepath}"
     if image_generation_enable:
-            prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
+            theme_or_title = game_theme if game_theme.strip() else gameTitle
+            prompt = style_prompt_template.format(game_theme=theme_or_title,name=image_name, description=image_description, art_style=art_style)
             print(prompt)
 
             max_attempts = 3
@@ -110,8 +111,8 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
     else:
         return handle_no_image_found(filepath)
 
-async def generate_all(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
-    tasks = [generate_sketch(symbol, art_style, gameTitle) for symbol in symbols]
+async def generate_all(symbols: List[Dict[str, str]], art_style: str, gameTitle: str,game_theme: str):
+    tasks = [generate_sketch(symbol, art_style, gameTitle,game_theme) for symbol in symbols]
     results = await asyncio.gather(*tasks)
     for result in results:
         print(result)

@@ -70,8 +70,8 @@ def generate_game_details(user_input, exclude_sections):
         print("[Failure] No game details generated.")
         return None
 
-    run_image_generator(extract_symbols(result), extract_visual_style(result), extract_game_title(result))
-    run_image_generator(extract_characters(result), extract_visual_style(result), extract_game_title(result))
+    run_image_generator(extract_symbols(result), extract_visual_style(result), extract_game_title(result),extract_game_theme(result))
+    run_image_generator(extract_characters(result), extract_visual_style(result), extract_game_title(result),extract_game_theme(result))
 
     #print(result)
     return result
@@ -94,11 +94,11 @@ def safe_run_chain(chain, inputs, retries=2):
             break
     return None
 
-def run_image_generator(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
+def run_image_generator(symbols: List[Dict[str, str]], art_style: str, gameTitle: str,game_theme: str):
     if symbols:
         def async_task():
             try:
-                asyncio.run(image_service.generate_all(symbols, art_style, gameTitle))
+                asyncio.run(image_service.generate_all(symbols, art_style, gameTitle,game_theme))
             except Exception as e:
                 print(f"[Image Generation Error] {e}")
 
@@ -135,6 +135,11 @@ def extract_visual_style(schema: GameDesignSchema) -> str:
 
 def extract_game_title(schema: GameDesignSchema) -> str:
     return schema.gameTitle if schema.gameTitle else ""
+
+def extract_game_theme(schema: GameDesignSchema) -> str:
+    return schema.story.theme if schema.story and schema.story.theme else ""
+
+
 
 # def generate_dynamic_prompt_elements(exclude_sections):
 #     dynamic_elements ={"symbols":""" \n Symbols 
