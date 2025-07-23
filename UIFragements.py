@@ -29,16 +29,17 @@ FOLDER_WATCH_RETRY_MAX_COUNT = 20
 def get_gameprogression_section(prompt):
     gameprogression={}
     try:
-        if(prompt.story.islandMapProgression):
-            gameprogression["Island Map Progression"]=prompt.story.islandMapProgression
-        if(prompt.story.souvenirCollection):
-            gameprogression["Souvenir Collection"]=prompt.story.souvenirCollection
-        if(prompt.story.seasonalEvents):
-            gameprogression["Seasonal Events"]=prompt.story.seasonalEvents
+        if(prompt.story.baseSpinMechanics):
+            gameprogression["Base Spin Mechanics"]=prompt.story.baseSpinMechanics
+        if(prompt.story.bonusTriggersCollectionSystems):
+            gameprogression["Bonus Triggers & Collection Systems"]=prompt.story.bonusTriggersCollectionSystems
+        if(prompt.story.unlockableAreasOrLevels):
+            gameprogression["Unlockable Areas or Levels"]=prompt.story.unlockableAreasOrLevels
         if(prompt.story.achievementBadgesTrophies):
             gameprogression["Achievement Badges & Trophies"]=prompt.story.achievementBadgesTrophies
         if(prompt.story.progressiveJackpot):
             gameprogression["Progressive Jackpot"]=prompt.story.progressiveJackpot
+        
         return "\n".join([f"- **{key}:** {value}" for key, value in gameprogression.items()])
     except Exception as e:
         print(f'Something went wrong: method: get_gameprogression_section : {e}')
@@ -160,7 +161,7 @@ def process_symbols(symbolsList: List[Symbol] ,gameTitle: str ):
 # Customizing the expander widget with pink borders, blue bold headers, and ensuring expanders are opene
 
 def show_output(prompt): 
-    if st.session_state.show_story:
+    if (st.session_state.show_story and prompt is not None):
         st.markdown("""
             <style>
             /* Style to make the expander widget open by default */
@@ -260,22 +261,11 @@ def show_output(prompt):
                 # Subsection 2
                 if prompt.story and prompt.story.gameplay:
                  with st.expander("**Game Play**", expanded=True):
-                    st.markdown(prompt.story.gameplay)
+                    st.markdown(appendgameplay(prompt.story))
                     st.markdown(get_gameprogression_section(prompt))
-                    if prompt.story and prompt.story.monetizationStrategy:
-                        st.markdown("**Monetization Strategy**")
-                        st.markdown(prompt.story.monetizationStrategy)
+
 
                 # Subsection 3
-                if prompt.story.setting and prompt.story.setting.location:
-                    with st.expander("**Location**", expanded=True):
-                        st.markdown(prompt.story.setting.location)
-
-                # Subsection 4
-                if prompt.story.setting and prompt.story.setting.worldStyle:
-                 with st.expander("**WorldStyle**", expanded=True):
-                    st.markdown(prompt.story.setting.worldStyle)
-
         # Section 3 - Visual Style
         if st.session_state['visualstyleoption']: 
             if prompt.visualStyle and prompt.visualStyle.artStyle:
@@ -299,13 +289,14 @@ def show_output(prompt):
                     )
 
                 # Subsection 1
-                totalBonusFeatures = len(prompt.bonusFeatures)
-                for i in range(totalBonusFeatures):
-                        section(f"{prompt.bonusFeatures[i].type}", {
-                                "Name": f" {prompt.bonusFeatures[i].name}",
-                                "Description": f" {prompt.bonusFeatures[i].description}",
-                                "Triggered By": f" {prompt.bonusFeatures[i].trigger}"
-                                })
+                if(prompt.bonusFeatures is not None):
+                    totalBonusFeatures = len(prompt.bonusFeatures)
+                    for i in range(totalBonusFeatures):
+                            section(f"{prompt.bonusFeatures[i].type}", {
+                                    "Name": f" {prompt.bonusFeatures[i].name}",
+                                    "Description": f" {prompt.bonusFeatures[i].description}",
+                                    "Triggered By": f" {prompt.bonusFeatures[i].trigger}"
+                                    })
                         
         # New Section 4 - Characters Features
         if st.session_state['charactersoption']:
@@ -416,6 +407,11 @@ def show_output(prompt):
                         process_symbols(prompt.symbols.scatterSymbols,prompt.gameTitle)
 
 
+def appendgameplay(story):
+    if(story.monetizationStrategy is not None):
+       return story.gameplay + " \n " + story.monetizationStrategy
+    else:
+       return story.gameplay 
 
 
                 

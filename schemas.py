@@ -1,23 +1,17 @@
 from typing import List, Optional
 from pydantic import BaseModel
  
-class Setting(BaseModel):
-    location: Optional[str]
-    worldStyle: Optional[str]
- 
-
 class Story(BaseModel):
-    summary: Optional[str] = None
-    gameplay: Optional[str] = None
-    islandMapProgression: Optional[str] = None
-    souvenirCollection: Optional[str] = None
-    seasonalEvents: Optional[str] = None
-    achievementBadgesTrophies: Optional[str] = None
-    progressiveJackpot: Optional[str] = None
-    monetizationStrategy: Optional[str] = None
-    setting: Optional[Setting] = None
+    summary: str
+    gameplay: str
+    baseSpinMechanics: str
+    bonusTriggersCollectionSystems: str
+    unlockableAreasOrLevels: str
+    progressiveJackpot: str
+    achievementBadgesTrophies: str
+    monetizationStrategy: str
 
- 
+
 class Character(BaseModel):
     name: str
     description: str
@@ -25,7 +19,6 @@ class Character(BaseModel):
 class Symbol(BaseModel):
     name: str
     description: str
-    
  
 class Symbols(BaseModel):
     lowPaySymbols: List[Symbol]
@@ -46,12 +39,12 @@ class VisualStyle(BaseModel):
  
  
 class GameDesignSchema(BaseModel):
-    gameTitle: Optional[str]  = None
-    platform: Optional[str]  = None
-    slotSize: Optional[str]  = None
-    tone: Optional[str]  = None
-    characters: Optional[List[Character]]  = None
-    symbols: Optional[Symbols]  = None
-    story: Optional[Story]  = None
-    bonusFeatures: Optional[List[BonusFeature]]  = None
-    visualStyle: Optional[VisualStyle]  = None
+    gameTitle: str
+    platform: str
+    slotSize: str
+    tone: str
+    story: Story
+    characters: List[Character]
+    symbols: Symbols
+    bonusFeatures: List[BonusFeature]
+    visualStyle: VisualStyle

@@ -4,45 +4,85 @@ llm:
 
 prompt:
   template: |
-    **Role:**
-        You are a professional casino slot game designer tasked with creating an immersive, narrative-driven slot game concept.
- 
-        **Objective:**
-        Based on the User Input below, design a unique story-rich slot game concept. The concept should reflect the tone, theme, player characteristics and preferences provided, while ensuring engaging gameplay and progression mechanics.
- 
-        **Instructions:**
-        Create a narrative-led igaming slot game concept with a clear storyline, setting, and progression system.
-        Content Requirements:
-        Include the following in the game concept:
-        Story
-          - Summary: Provide a detailed narrative summary (max 250 words).
- 
-          - Game Play : Design detailed (minimum 250 words) unique progression features (e.g., Progressive Jackpots, Collection Mechanics, Story & Adventure Progression, Achievement Badges & Trophies).
- 
-          - Monetization Strategy: Explain how the game play drive monetization.
- 
-          - Final Hook: Conclude with a compelling tagline or hook to build curiosity.
- 
-        Platform (["mobile", "desktop", "cross-platform"])
- 
-        If tone or slot size is not specified in User Input, choose one appropriate for the theme
-        Tone (e.g., Fun & Playful, Sci-Fi Adventure, Humorous & Wacky)
- 
-        Slot Size (e.g., 5x3)
- 
-        {include_prompt}
- 
-        If Visual Style is not specified in User Input, choose one appropriate for the theme
-        Visual Style (e.g., 2D comic style , futuristic 2D look).
- 
-        UniqueTwists
-        - 1-2 suggestions based on story
- 
-        **User Input:** {input_text}
- 
-        {exclude_prompt}
- 
-        Creative Freedom:
-        If any details are missing from the user input, infer or creatively expand while maintaining coherence and uniqueness.
-        **output format:** Output as per given schema
-        {format_instructions}
+    You are a professional casino slot game designer tasked with developing a unique, immersive, narrative-driven slot game concept.
+    Objective: Based on the user-provided input:
+    **Theme & feature ideas** : {input_text}
+
+    Design a fully fleshed-out, production-ready slot game concept that reflects the tone, gameplay style, and mechanics inspired by the theme. Incorporate storytelling, progression, monetization, and innovative features to create a highly engaging experience suitable for real-money or social casino platforms.
+
+    **Instructions:**
+    Generate a slot game concept with the following structure:
+    1. GameTitle - Provide a compelling and theme-appropriate game title.
+    2. Platform  - Choose one: ["mobile", "desktop", "cross-platform"].  Use Platform if provided, otherwise default to cross-platform.
+    3. Tone - Match the tone to the theme. Use Tone if specified. Examples:Fun and Playful, Dark Mystery, High Fantasy, Sci-Fi Adventure, Mythical, Humorous, or Gritty Realism.
+    4. Slot Size - Choose a suitable reel grid for the game based on the theme and gameplay needs. Use Slot Size if specified. Examples:5x3, 5x4, 6x4, 4x4, 5x5. Include paylines or note if the game uses cluster pays or adjacent wins.
+    
+    5. Story 
+      5.1 Summary :  (Max 250 words) Write a narrative backstory based on  the theme. Establish the setting, key characters, and the player's overarching goal. Describe the world, conflict, and any mystery or treasure that drives the slot's progression.
+      5.2 GamePlay :  (Minimum 250 words) Describe the full game loop.
+      Game Play Progression experience in the following sub-sections:
+       - Base Spin Mechanics: Detail how the core slot functions: spin direction, win logic, reel behavior, and any base-level modifiers (e.g., sticky wilds, cascading symbols, etc.).
+       -  Bonus Triggers & Collection Systems : Explain how bonuses are triggered and how collection mechanics work (e.g., cash collect, scatter activation, symbol upgrades). Tie these mechanics to the Theme & feature ideas
+       - Unlockable Areas or Levels : Describe how the game evolves visually or mechanically through zones, maps, or chapters. Mention how players progress through areas using collected items or milestone achievements.
+       - Progressive Systems: Define features that evolve with continued play such as:
+              Progressive jackpots (Mini, Minor, Major, Grand or custom-named)
+              Character level-ups or abilities
+              Symbol or feature upgrades
+              Artifact collections or sets
+       - Daily Missions, Seasonal Events & Achievements:  Describe systems designed for retention: rotating missions, limited-time events, achievement rewards, progression ladders, etc.
+       - Narrative Progression & Evolving Mechanics: Explain how the story unfolds alongside gameplay: unlocking lore, chapters, visual changes to reels, evolving game features, or character-driven mini-goals.
+
+      5.3 Monetization Strategy :  **Map the result to the output JSON schema field story.monetizationStrategy**
+        Explain how the game supports monetization through gameplay:
+        Bet multipliers and unlock tiers
+        Feature gating by level or item count
+        Exclusive events or content access
+        Daily retention bonuses or rewardsEnsure this ties organically into the progression and theme.
+
+
+    6. Bonus Features : Design bonus rounds or features inspired by Theme & feature ideas or inferred from the theme.
+        **Map the result to the output JSON schema field bonusFeatures**
+        Include All the features that match the story:
+          Free spins modes
+          Wild behavior (expanding, sticky, roaming)
+          Jackpot wheels or ladders
+          Cash collect features
+          Themed interactive minigames 
+          Ensure each bonus feature is aligned with the tone and story.
+      Each bonusFeature should have name, type - what type of Bonus Feature it is , trigger - On what action it is triggered , description - How the game progress and outcome of the bonus feature. 
+
+    
+
+
+    7. Visual Style: Suggest the most suitable visual direction that alings with the theme and tone e.g 2D comic art ,  high-fantasy illustration, retro pixel, sci-fi neon, holographic HUD .Describe reel background, animations, symbol art, and how visuals evolve during progression or through new areas.
+
+
+    8. Unique Twists : Propose 1-2 standout creative mechanics or visual systems that set this game apart from other slot games. Examples include:
+      Story-based reel transformation
+      Character perks that activate at different stages
+      Unlockable narrative moments or collectibles
+      Dual-mode reels or time-based gameplay variants
+
+      
+
+    9. Symbols:  Define a complete symbol set:
+    
+      - 5 Low-Pay Symbols (simple theme-linked icons; include name and description , description should match the theme of the story)
+      - Between 3 to 5 Royal Symbols (e.g A, Q, K , J, 10, 9 ; include name and description , description should match the theme of the story)
+      - 5 High-Pay Symbols (e.g characters, artifacts, or landmarks; include name and description , description should match the theme of the story)
+      - 2 to 4 Wild Symbols (name and description; description to include function and visual design matching the theme )
+      - 1 to 2 Scatter Symbols (name and description; description to include function and visual design matching the theme)
+      
+
+    10. Characters : List 2-4 main characters with brief descriptions. Include their narrative roles and how they appear in gameplay (e.g., as symbols, in animations, in bonus rounds, or influencing outcomes).
+      
+
+
+    Creative Freedom:If any detail is missing from the user input, infer or expand creatively while ensuring  originality, and alignment with the theme. All design elements should connect logically within the slot world and gameplay loop.
+
+
+      **Return a JSON object strictly matching the schema below. 
+        Do not add or remove properties. Do not change nesting. 
+        All properties must be included even if values are empty strings.**
+
+      {format_instructions}

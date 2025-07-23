@@ -9,15 +9,12 @@ nebius:
   response_format: "b64_json"
 
 image:
-  width: 512
-  height: 512
+  width: 128
+  height: 128
   resize: true
   extension: .png
   resize_width: 128
   resize_height: 128
   directory_name: images
   style_prompt: |
-    Minimalist pencil sketch of {name}, featuring {description}, 
-    drawn in {art_style}. Styled as a slot machine reel symbol,
-    using clean black outlines, no shading, and a transparent background. 
-    Designed in a simple line art style, optimized, distinct, and easily recognizable
+    Minimalist **black & white** pencil sketch of {name}, featuring {description},drawn in {art_style}. Styled as a slot machine reel symbol,using clean black outlines, no shading, and a transparent background.Designed in a simple line art style, optimized, distinct, and easily recognizable

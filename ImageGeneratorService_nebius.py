@@ -8,16 +8,18 @@ from openai import OpenAI
 import base64
 from io import BytesIO
 import GameUtils as gameUtils
+import shutil
+
 # Load config from YAML
 with open("image_config.yaml", "r") as file:
     config = yaml.safe_load(file)
 
 # Extract config values
-folder_name=  config["image"]["directory_name"]
+folder_name = config["image"]["directory_name"]
 model = config["nebius"]["model"]
 base_url = config["nebius"]["base_url"]
-response_extension= config["nebius"]["response_extension"]
-response_format= config["nebius"]["response_format"]
+response_extension = config["nebius"]["response_extension"]
+response_format = config["nebius"]["response_format"]
 
 width = config["image"]["width"]
 height = config["image"]["height"]
@@ -27,6 +29,7 @@ resize_width = config["image"].get("resize_width", width)
 resize_height = config["image"].get("resize_height", height)
 
 style_prompt_template = config["image"]["style_prompt"]
+
 load_dotenv()
 
 client = OpenAI(
@@ -34,27 +37,22 @@ client = OpenAI(
     api_key=os.environ.get("NEBIUS_API_KEY")
 )
 
-# Async function to generate one image
-async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle: str):
-    print(image_input)
-    image_name = image_input["name"]
-    image_description = image_input["description"]
-    filename = f"{image_name.replace(' ', '_')}{extension}"
-    directory_name= gameUtils.create_directory_name(gameTitle,folder_name)
-    os.makedirs(directory_name, exist_ok=True)
-    
-    filepath = os.path.join(directory_name, filename)
+def handle_no_image_found(target_path: str):
+    fallback_image_path = "image_not_found.png"
 
-    # Check if image already exists
-    if os.path.exists(filepath):
-        print(f"Already exists: {filepath}")
-        return f"Skipped (already exists): {filepath}"
+    target_dir = os.path.dirname(target_path)
+    os.makedirs(target_dir, exist_ok=True)
 
-    prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
-    print(prompt)
+    try:
+        shutil.copy2(fallback_image_path, target_path)
+        print(f"Fallback image copied to: {target_path}")
+        return f"Fallback used: {target_path}"
+    except Exception as e:
+        print(f"Failed to copy fallback image: {e}")
+        return f"Failed to provide fallback image for: {target_path}"
 
-    def sync_generate():
-        result = client.images.generate(
+def sync_generate(prompt: str, filepath: str, directory_name: str) -> str:
+    result = client.images.generate(
         model=model,
         response_format=response_format,
         prompt=prompt,
@@ -69,32 +67,50 @@ async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle
         }
     )
 
-    # Extract and decode base64 image string
-        image_b64 = result.data[0].b64_json
-        image_data = base64.b64decode(image_b64)
-        image = Image.open(BytesIO(image_data))
+    image_b64 = result.data[0].b64_json
+    image_data = base64.b64decode(image_b64)
+    image = Image.open(BytesIO(image_data))
 
-        # Resize if enabled
-        if resize_enabled:
-            image = image.resize((resize_width, resize_height), Image.LANCZOS)
+    if resize_enabled:
+        image = image.resize((resize_width, resize_height), Image.LANCZOS)
 
-        # Ensure the directory exists
-        os.makedirs(directory_name, exist_ok=True)
+    os.makedirs(directory_name, exist_ok=True)
+    image.save(filepath)
+    return f"Saved: {filepath}"
 
-    # Save the image
-        image.save(filepath)
-        return f"Saved: {filepath}"
+async def generate_sketch(image_input: Dict[str, str], art_style: str, gameTitle: str):
+    print(image_input)
+    image_name = image_input["name"]
+    image_description = image_input["description"]
+    filename = f"{image_name.replace(' ', '_')}{extension}"
+    directory_name = gameUtils.create_directory_name(gameTitle, folder_name)
+    os.makedirs(directory_name, exist_ok=True)
 
-    return await asyncio.to_thread(sync_generate)
+    filepath = os.path.join(directory_name, filename)
 
+    if os.path.exists(filepath):
+        print(f"Already exists: {filepath}")
+        return f"Skipped (already exists): {filepath}"
 
-async def generate_all(symbols: List[Dict[str, str]], art_style:str,gameTitle: str):
-    tasks = [
-        generate_sketch(symbol,art_style,gameTitle)
-        for symbol in symbols
-    ]
+    prompt = style_prompt_template.format(name=image_name, description=image_description, art_style=art_style)
+    print(prompt)
+
+    max_attempts = 3
+    for attempt in range(1, max_attempts + 1):
+        try:
+            result = await asyncio.to_thread(sync_generate, prompt, filepath, directory_name)
+            return result
+        except Exception as e:
+            print(f"[Attempt {attempt}/{max_attempts}] Error during image generation: {e}")
+            if attempt < max_attempts:
+                await asyncio.sleep(1)
+            else:
+                print(f"Final failure for input: {image_input} with prompt: {prompt}")
+                return handle_no_image_found(filepath)
+
+async def generate_all(symbols: List[Dict[str, str]], art_style: str, gameTitle: str):
+    tasks = [generate_sketch(symbol, art_style, gameTitle) for symbol in symbols]
     results = await asyncio.gather(*tasks)
     for result in results:
         print(result)
     print("All images generated successfully by nebius")
-
