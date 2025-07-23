@@ -64,12 +64,21 @@ st.markdown("""
                 background-color: white !important;
                 color: black !important;
                 border: lightgrey  !important;
-                width: 200px !important;
+                width: 210px !important;
                 text-align: left !important;
                 white-space: nowrap !important;         /* Prevents text from wrapping */
                 overflow: hidden !important;            /* Hides overflow */
                 text-overflow: ellipsis !important; 
+                justify-content: start !important;
             }
+
+            .sidebar-heading {
+                padding: 1rem 0px !important;
+                padding-top: 3rem !important;
+            }
+
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
 
             </style>
         """, unsafe_allow_html=True)
@@ -141,7 +150,11 @@ def set_background(png_file):
 
 # ---------- Sidebar Chat Tree ----------
 with st.sidebar:
-    st.markdown("## Game Stories")
+    st.markdown("""
+    <h2 class="sidebar-heading" style="padding: 1rem 0px !important; padding-top: 3rem !important;">
+        Game Stories
+    </h2>
+    """, unsafe_allow_html=True)
     st.markdown('<div class="sidebar-container">', unsafe_allow_html=True)
     for chat_name in st.session_state.chat_names:
         is_selected = (chat_name == st.session_state.selected_chat)
@@ -176,7 +189,7 @@ with st.sidebar:
     st.markdown('</div>', unsafe_allow_html=True)
 
 #Form widgets
-gamedescription = st.text_area("Enter game description", key="gamedescription",height=150)
+gamedescription = st.text_area("Enter game description", key="gamedescription",height=200)
 
 #st.badge("Enrich game story with Add-ons")
 checks = st.columns(5)
