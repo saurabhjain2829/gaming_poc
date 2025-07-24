@@ -38,7 +38,7 @@ def get_gameprogression_section(prompt):
         if(prompt.story.achievementBadgesTrophies):
             gameprogression["Achievement Badges & Trophies"]=prompt.story.achievementBadgesTrophies
         if(prompt.story.progressiveJackpot):
-            gameprogression["Progressive Jackpot"]=prompt.story.progressiveJackpot
+            gameprogression["Jackpot"]=prompt.story.progressiveJackpot
         
         return "\n".join([f"- **{key}:** {value}" for key, value in gameprogression.items()])
     except Exception as e:
