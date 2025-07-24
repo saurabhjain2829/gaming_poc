@@ -13,4 +13,7 @@ def create_directory_name(game_title: str, folder_name) -> str:
 
 
 def remove_special_symbols(input: str) -> str:
-    return  re.sub(r"[<>:\"/\\|?*,\'`&;~%=\s]", "_",  input).strip("._")
+    sanitized = re.sub(r"[<>:\"/\\|?*,\'`&;~%=.\s!@#$^(){}\[\]+]", "_", input)
+    sanitized = re.sub(r"_+", "_", sanitized)  # Collapse multiple underscores
+    sanitized = sanitized.strip("_")           # Remove leading/trailing underscores
+    return sanitized

@@ -54,6 +54,10 @@ st.markdown("""
                 color:#4a4949 !important;
             }
             
+            button[kind="tertiary"] {
+                padding-top: 2rem !important;
+                padding-left: 2rem !important;
+            }
 
             .stSidebar {
                 width: 260px !important;
@@ -74,7 +78,6 @@ st.markdown("""
 
             .sidebar-heading {
                 padding: 1rem 0px !important;
-                padding-top: 3rem !important;
             }
 
             #MainMenu {visibility: hidden;}
@@ -111,6 +114,12 @@ def clear_screen():
     st.session_state.shown_images = set()
     st.session_state.show_story = False
     st.session_state.story_output = None
+    st.session_state.selected_chat = ""
+
+def new_chat_clicked():
+    clear_screen()
+    clear_form()
+    st.rerun()
 
 def get_story_options() :
     story_options =  {
@@ -150,9 +159,15 @@ def set_background(png_file):
 
 # ---------- Sidebar Chat Tree ----------
 with st.sidebar:
+
+    new_chat = st.button(":pencil2: New Game Concept", type='tertiary')
+
+    if new_chat:
+        new_chat_clicked()
+
     st.markdown("""
-    <h2 class="sidebar-heading" style="padding: 1rem 0px !important; padding-top: 3rem !important;">
-        Game Stories
+    <h2 class="sidebar-heading">
+        Your Game Concepts
     </h2>
     """, unsafe_allow_html=True)
     st.markdown('<div class="sidebar-container">', unsafe_allow_html=True)
