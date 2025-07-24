@@ -166,14 +166,13 @@ with st.sidebar:
         color: black !important;
         text-align: left !important;
         display: block;
-        width: 100%;
         border: 1px solid #ccc;
     }
     </style>
 """, unsafe_allow_html=True)
 
     # Create the button
-    new_chat = st.button("📝 New game concept", type='secondary') 
+    new_chat = st.button("📝 New game concept", type="secondary") 
 
     if new_chat:
         new_chat_clicked()
@@ -232,7 +231,7 @@ with checks[3]:
 with checks[4]:
     visualstyleoption = st.checkbox("Visual Style", key="visualstyleoption")
 
-create = st.button("Generate Concept")
+create = st.button("Generate concept")
 
 placeholder = st.empty()
 
