@@ -10,14 +10,14 @@ import time
 from PIL import Image
 import GameUtils as gameUtils
 from typing import List, Dict
-
+from PIL import Image, UnidentifiedImageError
 
 
 
 initialize_session_state()
 
 
-
+IMAGE_NOT_FOUND_FILE= os.path.join("image_not_found.png")
 MAIN_IMAGES_FOLDER_NAME = "images\\"
 # Folder to watch
 # IMAGE_DIR = Path("images")
@@ -91,9 +91,13 @@ def process_symbols(symbolsList: List[Symbol] ,gameTitle: str ):
         new_images = get_new_images(SymbolsImagesPath,gameTitle)
         if new_images:
             for img_path in new_images:
-                img = Image.open(img_path)
-                imgName = img_path.name.replace('_', ' ')
-                imgName = imgName.replace('.png','')
+                # try:
+                #     img = Image.open(img_path)
+                # except UnidentifiedImageError:
+                #     img = Image.open(IMAGE_NOT_FOUND_FILE)
+                
+                #imgName = img_path.name.replace('_', ' ')
+                #imgName = imgName.replace('.png','')
 
 
                 # Custom CSS to apply flexbox for equal height and border to col1
@@ -317,9 +321,12 @@ def show_output(prompt):
                         new_images = get_new_images(characterImagesPath,prompt.gameTitle)
                         if new_images:
                             for img_path in new_images:
-                                img = Image.open(img_path)
-                                imgName = img_path.name.replace('_', ' ')
-                                imgName = imgName.replace('.png','')
+                                # try:
+                                #     img = Image.open(img_path)
+                                # except UnidentifiedImageError:
+                                #     img = Image.open(IMAGE_NOT_FOUND_FILE)
+                                #imgName = img_path.name.replace('_', ' ')
+                                #imgName = imgName.replace('.png','')
 
 
                                 # Custom CSS to apply flexbox for equal height and border to col1
