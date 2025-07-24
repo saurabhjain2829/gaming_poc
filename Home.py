@@ -28,11 +28,11 @@ st.markdown(f"""
 page_icon = Image.open("app_icon.ico")
 
 st.set_page_config(
-    page_title="Game Story Generator App" ,
+    page_title="Game concept generator app" ,
     page_icon = page_icon
 )
 
-original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;"><h1>Game Concept Generator</h1></label>'
+original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;"><h1>Game concept generator</h1></label>'
 st.markdown(original_title, unsafe_allow_html=True)
 
 init_db()
@@ -180,7 +180,7 @@ with st.sidebar:
 
     st.markdown("""
     <h2 class="sidebar-heading">
-        Your Game Concepts
+        Your game concepts
     </h2>
     """, unsafe_allow_html=True)
     st.markdown('<div class="sidebar-container">', unsafe_allow_html=True)
