@@ -157,10 +157,23 @@ def set_background(png_file):
 
 #set_background("background.png")
 
-# ---------- Sidebar Chat Tree ----------
 with st.sidebar:
 
-    new_chat = st.button(":pencil2: New Game Concept", type='tertiary')
+    st.markdown("""
+    <style>
+    div.stButton > button {
+        background-color: white !important;
+        color: black !important;
+        text-align: left !important;
+        display: block;
+        width: 100%;
+        border: 1px solid #ccc;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+    # Create the button
+    new_chat = st.button("📝 New game concept", type='secondary') 
 
     if new_chat:
         new_chat_clicked()
