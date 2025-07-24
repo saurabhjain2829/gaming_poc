@@ -28,11 +28,11 @@ st.markdown(f"""
 page_icon = Image.open("app_icon.ico")
 
 st.set_page_config(
-    page_title="Game Story Generator App" ,
+    page_title="Game concept generator app" ,
     page_icon = page_icon
 )
 
-original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;"><h1>Game Concept Generator</h1></label>'
+original_title = '<label style="font-family:Courier; color:#4a4949; font-size: xx-large; font-weight: bold;"><h1>Game concept generator</h1></label>'
 st.markdown(original_title, unsafe_allow_html=True)
 
 init_db()
@@ -157,17 +157,29 @@ def set_background(png_file):
 
 #set_background("background.png")
 
-# ---------- Sidebar Chat Tree ----------
 with st.sidebar:
 
-    new_chat = st.button(":pencil2: New Game Concept", type='tertiary')
+    st.markdown("""
+    <style>
+    div.stButton > button {
+        background-color: white !important;
+        color: black !important;
+        text-align: left !important;
+        display: block;
+        border: 1px solid #ccc;
+    }
+    </style>
+""", unsafe_allow_html=True)
+
+    # Create the button
+    new_chat = st.button("📝 New game concept", type="secondary") 
 
     if new_chat:
         new_chat_clicked()
 
     st.markdown("""
     <h2 class="sidebar-heading">
-        Your Game Concepts
+        Your game concepts
     </h2>
     """, unsafe_allow_html=True)
     st.markdown('<div class="sidebar-container">', unsafe_allow_html=True)
@@ -219,7 +231,7 @@ with checks[3]:
 with checks[4]:
     visualstyleoption = st.checkbox("Visual Style", key="visualstyleoption")
 
-create = st.button("Generate Concept")
+create = st.button("Generate concept")
 
 placeholder = st.empty()
 
