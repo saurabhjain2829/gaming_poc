@@ -1,51 +1,45 @@
 llm:
   model: "gemini-2.0-flash-001"
-  temperature: 0.0
+  temperature: 0.5
 
 prompt:
   template: |
     You are a professional casino slot game designer tasked with developing a unique, immersive, narrative-driven slot game concept.
-    Objective: Based on the user-provided input:
-    **Theme & feature ideas** : {input_text}
-
-    Design a fully fleshed-out, production-ready slot game concept that reflects the tone, gameplay style, and mechanics inspired by the theme. Incorporate storytelling, progression, monetization, and innovative features to create a highly engaging experience suitable for real-money or social casino platforms.
+    
+    Based on the user-provided input **Theme & feature ideas** : {input_text}
+    Design a fully fleshed-out, production-ready slot game concept that reflects the tone, gameplay style, and mechanics inspired by the theme. Incorporate storytelling, progression, monetization, and innovative features to create a highly engaging experience suitable for real-money casino platforms.
 
     **Instructions:**
     Generate a slot game concept with the following structure:
-    1. GameTitle - Provide a compelling and theme-appropriate game title.
+    1. GameTitle - Generate a catchy, innovative, and compelling title that aligns with the game's theme.
     2. Platform  - Choose one: ["mobile", "desktop", "cross-platform"].  Use Platform if provided, otherwise default to cross-platform.
-    3. Tone - Match the tone to the theme. Use Tone if specified. Examples:Fun and Playful, Dark Mystery, High Fantasy, Sci-Fi Adventure, Mythical, Humorous, or Gritty Realism.
-    4. Slot Size - Choose a suitable reel grid for the game based on the theme and gameplay needs. Use Slot Size if specified. Examples:5x3, 5x4, 6x4, 4x4, 5x5. Include paylines or note if the game uses cluster pays or adjacent wins.
+    3. Tone - Deduce and apply the appropriate tone based on the input game theme, unless a specific tone is provided by the user — in which case, use the user-specified tone.
+    4. Slot Size - Choose an appropriate and valid slot reel grid configuration (in the format rows x columns) based on the game's theme and gameplay requirements. If a specific Slot Size is provided, use that configuration.
     
     5. Story 
-      5.1 Summary :  (Max 250 words) Write a narrative backstory based on  the theme. Establish the setting, key characters, and the player's overarching goal. Describe the world, conflict, and any mystery or treasure that drives the slot's progression.
-      5.2 Theme :  (20 Words) Write a concise summary describing the overall theme without mentioning any character names.
-      5.3 GamePlay :  (Minimum 250 words) Describe the full game loop.
+      5.1 Summary :  (Max 250 words) Write a compelling narrative backstory based on the game's theme. Establish the setting, introduce key characters, and define the player's overarching goal.
+      5.2 Theme :  (20 - 30 Words) Write a concise summary describing the overall theme without mentioning any character names.
+      5.3 GamePlay :  (Minimum 250 - 350 words) Describe the full game loop.
       Game Play Progression experience in the following sub-sections:
        - Base Spin Mechanics: Detail how the core slot functions: spin direction, win logic, reel behavior, and any base-level modifiers (e.g., sticky wilds, cascading symbols, etc.).
-       -  Bonus Triggers & Collection Systems : Explain how bonuses are triggered and how collection mechanics work (e.g., cash collect, scatter activation, symbol upgrades). Tie these mechanics to the Theme & feature ideas
-       - Unlockable Areas or Levels : Describe how the game evolves visually or mechanically through zones, maps, or chapters. Mention how players progress through areas using collected items or milestone achievements.
-       - Progressive Systems: Define features that evolve with continued play such as:
-              Progressive jackpots (Mini, Minor, Major, Grand or custom-named)
-              Character level-ups or abilities
-              Symbol or feature upgrades
-              Artifact collections or sets
-       - Daily Missions, Seasonal Events & Achievements:  Describe systems designed for retention: rotating missions, limited-time events, achievement rewards, progression ladders, etc.
-       - Narrative Progression & Evolving Mechanics: Explain how the story unfolds alongside gameplay: unlocking lore, chapters, visual changes to reels, evolving game features, or character-driven mini-goals.
+       - Bonus Triggers & Collection Systems : Explain how bonus features are triggered and how collection mechanics function (e.g., cash collect, scatter activation, etc.). Ensure these mechanics are thematically integrated and aligned with the provided Theme & Feature Ideas.
+       <Unlockable Areas or Levels> Include this section only if it aligns with the slot game's theme or is explicitly requested by the user.
+       - Unlockable Areas or Levels : Describe how the slot game evolves through visually distinct areas, themed stages, or narrative chapters. Explain how players unlock new zones or levels by collecting specific symbols, achieving win milestones, completing missions, or triggering progression-based features.
+       </Unlockable Areas or Levels>
+       <Jackpot> Include this section only if a jackpot is specified by the user or fits naturally within the game's theme and mechanics.
+       - Jackpot: Define the type of jackpot (e.g., fixed, progressive, tiered) and explain how it is triggered (e.g., special symbols, bonus rounds, random activation). Clearly describe the outcome and rewards associated with the jackpot.
+       </Jackpot
+       - Narrative Progression & Evolving Mechanics: (Include only if the game's story supports it) Describe how the story unfolds in parallel with gameplay. Highlight elements such as unlocking lore, progressing through narrative chapters, visual transformations of the reels, evolving game mechanics, or character-driven mini-goals that deepen player engagement.
 
       5.4 Monetization Strategy :  **Map the result to the output JSON schema field story.monetizationStrategy**
-        Explain how the game supports monetization through gameplay:
-        Bet multipliers and unlock tiers
-        Feature gating by level or item count
-        Exclusive events or content access
-        Daily retention bonuses or rewardsEnsure this ties organically into the progression and theme.
+       - Explain in detail how the game's payouts are structured, based on the story and theme. Describe how wins are awarded (e.g., paylines, ways, cluster wins), how symbol values relate to the narrative, and how special features or bonus rounds influence potential rewards
 
 
     6. Bonus Features : Design bonus rounds or features inspired by Theme & feature ideas or inferred from the theme.
         **Map the result to the output JSON schema field bonusFeatures**
-        Include All the features that match the story:
+        Include All the features that match the game theme and the story:
           Free spins modes
-          Wild behavior (expanding, sticky, roaming)
+          Wild behavior (expanding, sticky, roaming, etc.)
           Jackpot wheels or ladders
           Cash collect features
           Themed interactive minigames 
@@ -55,7 +49,7 @@ prompt:
     
 
 
-    7. Visual Style: Suggest the most suitable visual direction that alings with the theme and tone e.g 2D comic art ,  high-fantasy illustration, retro pixel, sci-fi neon, holographic HUD .Describe reel background, animations, symbol art, and how visuals evolve during progression or through new areas.
+    7. Visual Style: Suggest the most suitable visual direction that aligns with the game's story, theme, and tone (e.g., 2D comic art, high-fantasy illustration, retro pixel, sci-fi neon, holographic HUD). Describe the reel background, symbol artwork, animations, and how visual elements evolve during progression or when unlocking new areas or features.
 
 
     8. Unique Twists : Propose 1-2 standout creative mechanics or visual systems that set this game apart from other slot games. Examples include:
@@ -66,13 +60,13 @@ prompt:
 
       
 
-    9. Symbols:  Define a complete symbol set:
+    9. Symbols:  Define a complete symbol set for the game. For each symbol, provide a name and a description that captures its visual style, design elements, and thematic relevance. Ensure the overall look and feel of each symbol aligns with the game’s story, tone, and visual direction:
     
       - 5 Low-Pay Symbols (simple theme-linked icons; include name and description , description should match the theme of the story)
-      - Between 3 to 5 Royal Symbols (e.g A, Q, K , J, 10, 9 ; include name and description , description should match the theme of the story)
+      - Include a set of 3 to 5 symbols selected from A, K, Q, J, 10, and 9, adapted to suit the game’s theme, story, and mechanics. For each symbol, provide a name and a brief description that reflects its visual design and how it integrates into the game’s narrative and overall aesthetic.
       - 5 High-Pay Symbols (e.g characters, artifacts, or landmarks; include name and description , description should match the theme of the story)
-      - 2 to 4 Wild Symbols (name and description; description to include function and visual design matching the theme )
-      - 1 to 2 Scatter Symbols (name and description; description to include function and visual design matching the theme)
+      - Define wild symbols based on what best suits the game's mechanics. For each, provide a name and a description that explains its function (e.g., standard wild, expanding, sticky, walking, etc.) and visual design, ensuring both are thematically consistent with the game's story and aesthetic.
+      - Define scatter symbols as determined by the game's mechanics. For each, include a name and a description detailing its function (e.g., triggers bonus features, free spins, or special modes, etc.) and visual design, ensuring both align with the game's theme and overall aesthetic.
       
 
     10. Characters : List 2-4 main characters with brief descriptions. Include their narrative roles and how they appear in gameplay (e.g., as symbols, in animations, in bonus rounds, or influencing outcomes).

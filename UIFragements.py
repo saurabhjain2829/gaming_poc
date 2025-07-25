@@ -35,10 +35,10 @@ def get_gameprogression_section(prompt):
             gameprogression["Bonus Triggers & Collection Systems"]=prompt.story.bonusTriggersCollectionSystems
         if(prompt.story.unlockableAreasOrLevels):
             gameprogression["Unlockable Areas or Levels"]=prompt.story.unlockableAreasOrLevels
-        if(prompt.story.achievementBadgesTrophies):
-            gameprogression["Achievement Badges & Trophies"]=prompt.story.achievementBadgesTrophies
-        if(prompt.story.progressiveJackpot):
-            gameprogression["Jackpot"]=prompt.story.progressiveJackpot
+        if(prompt.story.jackpot):
+            gameprogression["Jackpot"]=prompt.story.jackpot
+        if(prompt.story.narrativeProgression):
+            gameprogression["Narrative Progression & Evolving Mechanics"]=prompt.story.narrativeProgression
         
         return "\n".join([f"- **{key}:** {value}" for key, value in gameprogression.items()])
     except Exception as e:

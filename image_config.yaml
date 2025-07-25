@@ -18,9 +18,9 @@ image:
   resize_height: 512
   directory_name: images
   style_prompt: |
-    A black and white pencil sketch illustration of {name}, described as: {description}. 
+    A beautiful, vibrant, pasionate and detailed illustration of {name}, described as: {description}. 
     The symbol should be centered in the frame, full-body, with no cropping, no distortion, and properly framed in a 1:1 aspect ratio. 
     Rendered on a plain white background, suitable for PNG format with clean transparent-style edges. 
-    Drawn in minimalist, clean pencil strokes with high contrast and sharp outlines. 
+    Drawn in colored and details with high contrast and sharp outlines. 
     The symbol must be distinct, readable, and optimized for slot game usage. 
     Game theme: {game_theme}.

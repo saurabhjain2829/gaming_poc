@@ -7,9 +7,9 @@ class Story(BaseModel):
     gameplay: str
     baseSpinMechanics: str
     bonusTriggersCollectionSystems: str
-    unlockableAreasOrLevels: str
-    progressiveJackpot: str
-    achievementBadgesTrophies: str
+    unlockableAreasOrLevels: Optional[str]
+    jackpot: Optional[str]
+    narrativeProgression: Optional[str]
     monetizationStrategy: str
 
 
